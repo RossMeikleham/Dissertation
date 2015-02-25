@@ -3,43 +3,18 @@ The language should be as C-like as possible ideally we would like it to be as m
 of a complete subset of C++ as possible, as the reset of the framework (Task Kernels and calling code)
 are written in C++ and is more consistent with how the entire framework works.
 
-C++ is a statically typed imperative language, and GPIR is a dynamically typed functional language.
-Therefore the language design has to be one which can be succesfully mapped onto GPIR code.
+C++ is a statically typed, imperative language which is sequentially evaluated by default.
+GPIR is a dynamically typed functional language which is evaluated in parallel by default.
+Both of these are pretty much complete opposite so the language design has to be one of that
+is like C++ and can be mapped onto GPIR without too much trouble.
 
 Design decisions:
 
-    Types:
-        C++ types such as string, char, bool, int, and double are included.
-        Pointers, and multi-level pointer types are included.
-        However pointers are restricted in that you cannot take
-        an address of any variable, adding and subtracting integers
-        from pointers is allowed. Usually pointers are passed into
-        the GPRM from the C++ caller to represent an Array.
-        
-    Operations:
-        Most basic binary arithmetic operations are included i.e. 
-        (+, -, *, /, \%, ==, !=, &&, ||, <<, >>, &, |, ^) and
-        unary operations :
-        (-, ~, !) 
-        are included. 
-
-    Single assignment:
-       Variables in GPC can only be assigned once per scope.
-
-       for example the following wouldn't be allowed
-           int i = 0;
-           int i = i + 1;
-
-       but the following would be:
-           int i = 0;
-           {
-               int i = i;
-           }
-
-       However an exception is made in for-loops
-
-       for loops:
-           single integer assignment 
+    Parallel Evaluation:
+        GPIR is parallel evaluated by default, with a "seq" function which
+        evaluates the given arguments in parallel. Making GPC abide by equivalent rules of parallel
+        evaluation by default with optional sequential makes the most sense, and gives the
+        power to do stuff. 
 
     Purely Functional:
         
@@ -79,20 +54,60 @@ Design decisions:
 
 
 
+Language Features:
+
+    This section explains the features of the language with respect to the design decisions above.
+
+    Syntax:
+        The syntax aims to be as close to C/C++ as possible. Statements must end with a semicolon. 
+        All variables must be statically typed. Blocks are surrounded in braces. Case is dependent.
+
+    New Operators:
+        Two new operators not currently present in C++ "seq" and "par" are introduced. 
+        These are placed before a block
+        of statements to determine whether each individual statement within the block are
+        to be evaluated in sequential or parallel. By default a block of statements are evaluated
+        in parallel, but the par keyword makes it more explicit especially if there's lots of nested
+        seq/par blocks.
+
+    Types:
+        C++ types such as string, char, bool, int, and double are included.
+        Pointers, and multi-level pointer types are included.
+        However pointers are restricted in that you cannot take
+        an address of any variable, adding and subtracting integers
+        from pointers is allowed. Usually pointers are passed into
+        the GPRM from the C++ caller to represent an Array.
+        
+    Operations:
+        Most basic binary arithmetic operations are included i.e. 
+        (+, -, *, /, \%, ==, !=, &&, ||, <<, >>, &, |, ^) and
+        unary operations :
+        (-, ~, !) 
+        are included. 
+
+        (+=, ++, --, -=) are not included, due to the single assignment rule.
+        Although an exception is made for the "afterthought" of the for loop construct, in which
+        the integer loop variable can be incremented with += or decremented by -=.
+
+    Functions:
+        Exactly the same as C/C++ 
 
 
+    Single assignment:
+       Variables in GPC can only be assigned once per scope.
 
+       for example the following wouldn't be allowed
+           int i = 0;
+           int i = i + 1;
 
+       but the following would be:
+           int i = 0;
+           {
+               int i = i;
+           }
 
-
-
-
-
-
-
-
-
-
-
-
-
+    For-Loops:
+       For loops have the same syntax as C/C++ for loops with some restrictions.
+       Essentially these are unrolled at compile-time and every iteration is evaluated in parallel.
+       
+       Essentialy the syntax is for(int var = n; [Boolean expression]; var += n or var -= n) 
