@@ -1,0 +1,21 @@
+The goal is to create a C-like language which then compiles down to GPIR code.
+The language should be as C-like as possible ideally we would like it to be as much
+of a complete subset of C++ as possible, as the reset of the framework (Task Kernels and calling code)
+are written in C++ and is more consistent with how the entire framework works.
+
+C++ is a statically typed imperative language, and GPIR is a dynamically typed functional language.
+Therefore the language design has to be one which can be succesfully mapped onto GPIR code.
+
+Design decision:
+    Single assignment:
+       Variables in GPC can only be assigned once per scope.
+
+       for example the following wouldn't be allowed
+           int i = 0;
+           int i = i + 1;
+
+       but the following would be:
+           int i = 0;
+           {
+               int i = i;
+           }
