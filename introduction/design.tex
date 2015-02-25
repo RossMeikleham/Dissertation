@@ -6,7 +6,23 @@ are written in C++ and is more consistent with how the entire framework works.
 C++ is a statically typed imperative language, and GPIR is a dynamically typed functional language.
 Therefore the language design has to be one which can be succesfully mapped onto GPIR code.
 
-Design decision:
+Design decisions:
+
+    Types:
+        C++ types such as string, char, bool, int, and double are included.
+        Pointers, and multi-level pointer types are included.
+        However pointers are restricted in that you cannot take
+        an address of any variable, adding and subtracting integers
+        from pointers is allowed. Usually pointers are passed into
+        the GPRM from the C++ caller to represent an Array.
+        
+    Operations:
+        Most basic binary arithmetic operations are included i.e. 
+        (+, -, *, /, \%, ==, !=, &&, ||, <<, >>, &, |, ^) and
+        unary operations :
+        (-, ~, !) 
+        are included. 
+
     Single assignment:
        Variables in GPC can only be assigned once per scope.
 
@@ -19,3 +35,64 @@ Design decision:
            {
                int i = i;
            }
+
+       However an exception is made in for-loops
+
+       for loops:
+           single integer assignment 
+
+    Purely Functional:
+        
+        To allow for mapping tasks to different cores efficiently
+        at compile time, the execution path must be able
+        to be known at compile time. 
+        
+        For example given a tree-like
+        recursion, 
+        
+        Single variable assignment
+        and not allowing return values from kernel functions
+        to be used in condition statements allow for this.
+
+        To achieve this results from kernel functions are implicitly
+        "tainted" as a kernel type.
+
+        For example:
+            int x = kernelObj.m1();
+        has a return type of int.
+        But the compiler implicitly casts this to a 
+        kernel int.
+
+        Kernel types can be passed to kernel methods, and even
+        mixed with non kernel types when passed as arguments to
+        kernel methods. For example:
+
+        int y = 5;
+        seq {
+            int x = kernelObj.m1();
+            kernelObj.m2(x + y);
+        }
+
+        would be allowed, but the following:
+
+        int y = kernelObj.m1();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
