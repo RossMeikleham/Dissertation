@@ -1,3 +1,5 @@
+\chapter{Design}
+
 The goal is to create a C-like language which then compiles down to GPIR code.
 The language should be as C-like as possible ideally we would like it to be as much
 of a complete subset of C++ as possible, as the reset of the framework (Task Kernels and calling code)
@@ -80,7 +82,7 @@ Language Features:
         
     Operations:
         Most basic binary arithmetic operations are included i.e. 
-        (+, -, *, /, \%, ==, !=, &&, ||, <<, >>, &, |, ^) and
+        (+, -, *, /, \%, ==, !=, \&\&, ||, <<, >>, \&, |, \^) and
         unary operations :
         (-, ~, !) 
         are included. 
