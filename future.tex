@@ -1,12 +1,24 @@
 \chapter{Future Work}
 
 Future Features that could be added:
+
+\section{Configuration file generation}
     yml config generation.
     These files are needed by the GPRM to determine aliases in GPIR code, libraries used,
     number of threads/nodes. There is enough information at compilation time to generate these,
     and they are currently generated manually. 
 
+
+\section{Language Features}
     Other C++ language features, C++11 lambdas may be useful,
     while-loops, and possibly some STL support e.g. ability to use STD vector instead of pointers.
 
+\section{Compiler Optimisations}
 
+    There are a few optimisations that can be performed by the compiler to reduce the work needed to be 
+    performed by the GPRM at runtime.
+
+\subsection{Binary Expressions}
+    Currently the evaluator will left fold over values that are known at compile time,
+
+\lstinputlisting{code_samples/binaryOp.gpc}

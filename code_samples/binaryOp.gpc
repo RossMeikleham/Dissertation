@@ -1,0 +1,10 @@
+
+GPRM::Kernel::Test test;
+
+void binaryOp() {
+    seq {
+        int i = test.m1();
+        int j = test.m2();
+        test.m2(10 + i + 12 * j * 13);
+    }    
+}

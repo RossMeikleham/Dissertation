@@ -1,16 +1,34 @@
 \pdfoutput=1
 
 \documentclass{l4proj}
-
-%
-% put any packages here
-%
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{xcolor}
 
 \begin{document}
+
+%Set the Font/Coloring for the GPC language,
+%Use the C++ default with added seq and par keywords
+\lstset{language=C++,
+                basicstyle=\ttfamily,
+                keywordstyle=\color{blue}\ttfamily,
+                stringstyle=\color{red}\ttfamily,
+                commentstyle=\color{gray}\ttfamily,
+                morecomment=[l][\color{magenta}]{\#}
+                directivestyle={\color{green}}
+                identifierstyle=\color{purple},
+                numbers=left
+}
+\lstset{
+    morekeywords={seq}
+}
+
+
 \title{Design and Compilation of a C-like front-end language for GPRM}
 \author{Ross Meikleham}
 \date{March 2015}
 \maketitle
+
 
 \begin{abstract}
 \input{introduction/abstract.tex}
@@ -31,6 +49,7 @@
 \input{design.tex}
 \input{implementation.tex}
 \input{future.tex}
+
 
 
 %The first page, abstract and table of contents are numbered using Roman numerals. From now on pages are numbered
