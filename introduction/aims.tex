@@ -1,3 +1,14 @@
-The aim of the project is to design and create a C-like front end programming language for the GPRM. The compiler should generate the GPIR code to be used with the GPRM.
+\section{Project Aims}
 
+The GPIR language isn't really suitable for programming in. For one it requires the programmer to manually
+manage which thread each task is allocated to. The language is also inconsistant with the C++ language used for 
+the other parts of the framework (Calling code and Class Kernels). A language closer to C/C++ will be
+more consistent with the entire framework.
 
+The aim of this project is to design a C-like language which can be evaluated in parallel by default, and build
+a compiler for it. The compiler should be able to compile this new language down to GPIR code. 
+
+The language should be easy to pick up and write programs in for anyone familiar with the C/C++ languages.
+To achieve this the language should be as close to C/C++ as possible 
+
+We'll call the new language being designed " Glasgow Parallel C" or "GPC" for short.
