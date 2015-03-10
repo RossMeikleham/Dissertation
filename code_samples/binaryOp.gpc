@@ -5,6 +5,6 @@ void binaryOp() {
     seq {
         int i = test.m1();
         int j = test.m2();
-        test.m2(10 + i + 12 * j * 13);
+        test.m2(3 + 10 + i + j + 13 - 10);
     }    
 }

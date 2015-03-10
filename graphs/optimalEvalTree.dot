@@ -1,0 +1,14 @@
+
+digraph G{
+  graph [ordering="out"];
+  a[label="+"]; b[label="+"]; a->b;
+  c[label="j"]; a -> c;
+  d[label="-"];  b -> d;
+  e[label="i"]; b -> e;
+  f[label="+"];  d -> f;
+  g[label="10"];  d -> g;
+  h[label="+"];  f -> h;
+  i[label="13"];  f -> i;
+  j[label="3"];  h -> j;
+  k[label="10"]; h -> k;
+}

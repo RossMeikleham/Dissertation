@@ -1,0 +1,7 @@
+digraph G{
+  graph [ordering="out"];
+  a[label="+"]; b[label="+"]; a->b;
+  c[label="j"]; a -> c;
+  d[label="16"];  b -> d;
+  e[label="i"]; b -> e;
+}
