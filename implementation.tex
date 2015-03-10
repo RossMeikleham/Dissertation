@@ -1,12 +1,45 @@
 \chapter{Implementation}
 
-The language to implement the compile will be Haskell.
-This is because functional languages are suited for compilers due to the nature of using Trees and recurrsively 
-traversing them in program compilation.
-Many functional languages have features such as Algebraic Datatypes, and tail-end recursive optimisations
-which lend themselves well to these.
+
+\section{Language Choice}
+
+The compiler will be implemented using the Haskell programming language.
+
+Functional languages are suited for building compilers.
+This is due to the traversal of trees which occurs often during complication.
+Functional languages typically have features such as pattern matching and tail-end recursive optimisation 
+which make them suitable for traversing trees.
+
+The Glasgow Haskell Compiler is available for most platforms, most importantly for Windows, OSX and Linux 
+on x86 architectures. This allows the compiler to be portable across these platforms provided the libraries 
+used to build the compiler are portable.
+
+Haskell has algebaric datatypes, these make it easy to represent Abstract Syntax Trees in a 
+readable form, and express recursive relations.
+
+\begin{lstlisting}[style=myHaskell]
+
+    data Expression =
+          Add Expression Expression
+        | Sub Expression Expression
+        | Const Integer
+
+\end{lstlisting}
+
+
+
 Haskell also has powerful libraries for parsing source code such as Parsec which is a parser combinator
-library eliminating the need for such as yylex. It has a very powerful type system
+library. Parsec allows Combinator parsers to be written in the Haskell language itself avoiding the complexity
+of integration of different tools and languages. 
+\cite{parsec}
+
+\section{Tools and Build Process}
+
+\subsection{Cabal}
+\subsection{Testing}
+\subsection{Continuous Integration}
+\subsection{Code Coverage}
+
 
 Splitting up compilation into multiple stages:
     
@@ -22,8 +55,14 @@ Splitting up compilation into multiple stages:
 
         |
 
-     Interpreter which generates a GPIR AST
+     Evaluator which steps through the code and generates a 
+     GPIR AST
 
         |
 
       Translate GPIR AST into GPIR source code
+
+\section{Parser/Lexer}
+\section{Type and Scope checking}
+\section{Evaluation}
+\section{GPIR Code Generation}

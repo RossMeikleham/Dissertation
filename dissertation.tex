@@ -4,6 +4,7 @@
 \usepackage{listings}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{url}
 
 \begin{document}
 
@@ -23,6 +24,18 @@
 
 
 \lstdefinestyle{myGPIR} {language=Lisp,
+                basicstyle=\ttfamily,
+                keywordstyle=\color{blue}\ttfamily,
+                stringstyle=\color{red}\ttfamily,
+                commentstyle=\color{gray}\ttfamily,
+                morecomment=[l][\color{magenta}]{\#}
+                directivestyle={\color{green}}
+                identifierstyle=\color{purple},
+                numbers=left,
+                morekeywords={seq}
+}
+
+\lstdefinestyle{myHaskell} {language=Haskell,
                 basicstyle=\ttfamily,
                 keywordstyle=\color{blue}\ttfamily,
                 stringstyle=\color{red}\ttfamily,
