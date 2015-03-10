@@ -1,0 +1,18 @@
+
+GPRM::Kernel::Test test;
+
+// Pure Function
+int f() {
+    int a = 5;
+    int b = 6;
+    int c = 10;
+    int d = 22;
+    return ((a * b) / c) & d;
+}
+
+void pureFun() {
+    seq {
+        int a = f();
+        test.m1(a);
+    }   
+}

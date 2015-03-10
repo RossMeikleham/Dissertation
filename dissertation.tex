@@ -9,7 +9,7 @@
 
 %Set the Font/Coloring for the GPC language,
 %Use the C++ default with added seq and par keywords
-\lstset{language=C++,
+\lstdefinestyle{myGPC} {language=C++,
                 basicstyle=\ttfamily,
                 keywordstyle=\color{blue}\ttfamily,
                 stringstyle=\color{red}\ttfamily,
@@ -17,10 +17,21 @@
                 morecomment=[l][\color{magenta}]{\#}
                 directivestyle={\color{green}}
                 identifierstyle=\color{purple},
-                numbers=left
+                numbers=left,
+                morekeywords={seq}
 }
-\lstset{
-    morekeywords={seq}
+
+
+\lstdefinestyle{myGPIR} {language=Lisp,
+                basicstyle=\ttfamily,
+                keywordstyle=\color{blue}\ttfamily,
+                stringstyle=\color{red}\ttfamily,
+                commentstyle=\color{gray}\ttfamily,
+                morecomment=[l][\color{magenta}]{\#}
+                directivestyle={\color{green}}
+                identifierstyle=\color{purple},
+                numbers=left,
+                morekeywords={seq}
 }
 
 
