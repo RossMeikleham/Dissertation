@@ -4,9 +4,9 @@ digraph G{
 
   b[label="MS.merge(a, 0, 2, 4)"]; a -> b;
   c[label="MS.merge(a, 0, 1, 2)"]; b -> c;
-  d[label="MS.merge(a, 2, 3, 4)"]; c -> d;
+  d[label="MS.merge(a, 2, 3, 4)"]; b -> d;
   
   e[label="MS.merge(a, 4, 6, 8)"]; a -> e;
   f[label="MS.merge(a, 4, 5, 6)"];  e -> f;
-  g[label="MS.merge(a, 6, 7, 8)"];  f -> g;
+  g[label="MS.merge(a, 6, 7, 8)"];  e -> g;
 }

@@ -10,15 +10,78 @@ GPIR is a dynamically typed functional language which is evaluated in parallel b
 Both of these are pretty much complete opposite so the language design has to be one of that
 is like C++ and can be mapped onto GPIR without too much trouble.
 
-Design decisions:
+\section{Language Design Decisions}
 
-    Parallel Evaluation:
+\subsection{Parallel Evaluation}
         GPIR is parallel evaluated by default, with a "seq" function which
         evaluates the given arguments in parallel. Making GPC abide by equivalent rules of parallel
         evaluation by default with optional sequential makes the most sense, and gives the
         power to do stuff. 
 
-    Purely Functional:
+
+\subsection{Purely Functional}
+
+In the GPRM jumping to labels is an expensive operation, to avoid
+this function calls will need to be inlined, and loops unrolled 
+as much as possible. The execution path will also need to be known 
+during compile time to achieve this. 
+
+Another one of the major benefits of being able to compute the execution
+path at runtime is that recursive functions can be more efficiently parralelised
+by the compiler. We'll use a Mergesort example to illustrate this.
+
+\begin{lstlisting}[style=myGPC]
+
+//Use Sort class from Kernel
+GPRM::Kernel::Sort MS;
+
+int size = 8
+
+void merge_sort(int *a, int low, int high) {
+    if (low + 1 < high) {
+        mid = (low + high) / 2;
+   
+        seq {
+            par {
+                merge_sort(a, low, mid);
+                merge_sort(a, mid, high);
+            }
+            MS.merge(a, low, mid, high);            
+        }
+    
+)
+
+void GPC_merge_sort(int *a) {
+    merge_sort(a, 0, size);
+}
+
+\end{lstlisting}
+
+The merge kernel calls be be reduced down to a tree:
+
+\begin{center}
+\includegraphics[scale=0.4]{graphs/mergesortTree.png}
+\end{center}
+
+
+\begin{lstlisting}[style=myGPC]
+
+seq {
+
+}
+
+\end{lstlisting}
+
+However if the language is Turing-complete deciding the execution path
+of a given program is essentially the Halting Problem. It has been proven that the solution to this problem is undecidable\cite{halting} 
+
+To avoid this problem, the language needs to be restricted to a point where it can still be useful and the execution
+path decided at compile time.
+
+
+
+   therefore
+to avoid this the language itself will be purely functional.
         
         To allow for mapping tasks to different cores efficiently
         at compile time, the execution path must be able
@@ -56,15 +119,15 @@ Design decisions:
 
 
 
-Language Features:
+\section{Language Features}
 
     This section explains the features of the language with respect to the design decisions above.
 
-    Syntax:
+\subsection{Syntax}
         The syntax aims to be as close to C/C++ as possible. Statements must end with a semicolon. 
         All variables must be statically typed. Blocks are surrounded in braces. Case is dependent.
 
-    New Operators:
+\subsection{New Operators}
         Two new operators not currently present in C++ "seq" and "par" are introduced. 
         These are placed before a block
         of statements to determine whether each individual statement within the block are
@@ -72,7 +135,7 @@ Language Features:
         in parallel, but the par keyword makes it more explicit especially if there's lots of nested
         seq/par blocks.
 
-    Types:
+\subsection{Types}
         C++ types such as string, char, bool, int, and double are included.
         Pointers, and multi-level pointer types are included.
         However pointers are restricted in that you cannot take
@@ -80,7 +143,7 @@ Language Features:
         from pointers is allowed. Usually pointers are passed into
         the GPRM from the C++ caller to represent an Array.
         
-    Operations:
+\subsection{Operations}
         Most basic binary arithmetic operations are included i.e. 
         (+, -, *, /, \%, ==, !=, \&\&, ||, <<, >>, \&, |, \^) and
         unary operations :
@@ -91,11 +154,11 @@ Language Features:
         Although an exception is made for the "afterthought" of the for loop construct, in which
         the integer loop variable can be incremented with += or decremented by -=.
 
-    Functions:
+\subsection{Functions}
         Exactly the same as C/C++ 
 
 
-    Single assignment:
+\subsection{Single assignment}
        Variables in GPC can only be assigned once per scope.
 
        for example the following wouldn't be allowed
@@ -108,7 +171,7 @@ Language Features:
                int i = i;
            }
 
-    For-Loops:
+\subsection{For-Loops}
        For loops have the same syntax as C/C++ for loops with some restrictions.
        Essentially these are unrolled at compile-time and every iteration is evaluated in parallel.
        
