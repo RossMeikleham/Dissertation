@@ -17,6 +17,11 @@ used to build the compiler are portable.
 Haskell has algebaric datatypes, these make it easy to represent Abstract Syntax Trees in a 
 readable form, and express recursive relations.
 
+Also due to the pure function nature of Haskell, parts of complilation can easily be performed in parallel.
+For example during type checking, each GPC function can be type checked in parallel and this can even be subdivided 
+further into blocks within functions. For this project parallisation is not a concern, but in the future if compliation ever
+needs to be faster then this option is always available.
+
 \begin{lstlisting}[style=myHaskell]
 
     data Expression =
