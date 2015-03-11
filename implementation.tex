@@ -14,36 +14,109 @@ The Glasgow Haskell Compiler is available for most platforms, most importantly f
 on x86 architectures. This allows the compiler to be portable across these platforms provided the libraries 
 used to build the compiler are portable.
 
-Haskell has algebaric datatypes, these make it easy to represent Abstract Syntax Trees in a 
-readable form, and express recursive relations.
-
-Also due to the pure function nature of Haskell, parts of complilation can easily be performed in parallel.
-For example during type checking, each GPC function can be type checked in parallel and this can even be subdivided 
-further into blocks within functions. For this project parallisation is not a concern, but in the future if compliation ever
-needs to be faster then this option is always available.
+Haskell has algebaric datatypes, these makes Abstract Syntax Trees
+simpler to implement. For example the AST for a very simple grammer
+in Haskell can be represented as follows:
 
 \begin{lstlisting}[style=myHaskell]
 
     data Expression =
           Add Expression Expression
-        | Sub Expression Expression
+        | Negate Expression 
         | Const Integer
 
 \end{lstlisting}
 
+The equivalent in an Imperative/OOP language (in this case Java)
+would be the following:
 
+\begin{lstlisting}[style=myJava]
+
+abstract Class Expression {}
+
+class Add extends Expression {
+    public Expression left;
+    public Expression right;
+    public Add(Expression l, Expression r) {
+        left = l;
+        right = r;    
+    } 
+}
+
+class Negate extends Expression {
+    public Expression expr;
+    public Negate(Expression e) {
+        expr = e;    
+    }
+} 
+
+class Const extends Expression {
+    public int value;
+    public Const(int v) {
+        value = v;
+    }
+}       
+
+\end{lstlisting}
+
+The Haskell version is much clearer on the structure of the tree, and takes much
+less code to implement. 
+
+It is also to easily extend Haskell datatypes to include
+custom annotations. For example storing the source code position for parts of expressions may
+be useful for reporting errors to the user.
+
+Due to the pure function nature of Haskell, parts of complilation can easily be performed in parallel.
+For example during type checking, each GPC function can be type checked in parallel and this can even be subdivided 
+further into blocks within functions. For this project parallisation is not a concern, but in the future if compliation ever
+needs to be faster then this option is always available.
 
 Haskell also has powerful libraries for parsing source code such as Parsec which is a parser combinator
 library. Parsec allows Combinator parsers to be written in the Haskell language itself avoiding the complexity
 of integration of different tools and languages. 
 \cite{parsec}
 
-\section{Tools and Build Process}
+\section{Tools and Testing}
 
 \subsection{Cabal}
+
+Cabal (Common Architecture for Building Applications and Libraries) is a system for building and
+packaging Haskell libraries and programs.\cite{cabal}. Using this system to manage the
+project library dependencies, and can automatically download and install missing dependencies,
+build and install the compiler on the system, and run unit tests simply.
+
 \subsection{Testing}
-\subsection{Continuous Integration}
+
+For Unit testing the HUnit library will be used, this can be integrated
+with Cabal to easily run unit tests.
+
+One form of testing used for this project is testing each individual component.
+(e.g. The Parser, The TypeChecker) Each component in the compiler can easily
+be uncoupled from one another due to the linear nature of compliation.
+
+Another form of testing is writing GPC source files which should compile, and
+GPC files which should fail compilation at a certain stage, the compiler
+is then invoked during testing on all of these files to check whether
+all the source files which should compile do infact compile with no errors,
+and all the source files which should raise an error do not compile.
+
+An upside to this method is that testing this way is flexible in that
+they aren't coupled with the implementation internals of the compiler.
+The only way that these test would need to be changed was if the design
+of the language itself would need to be changed.
+
+The downsides to this method is that without manually checking the errors raised
+by the tests that should fail the source may generate an error which is unrelated
+to the error that is being tested. This is why some testing of each internal
+component is done alongside this method.
+
 \subsection{Code Coverage}
+
+The Haskell HPC (Haskell Program Coverage) library allows for recording
+code coverage over different modules during testing. This can be integrated with
+cabal unit testing to automatically generate these results. The usefulness of this
+allows for checking which sections of code still need to be tested and assists
+in writing further unit tests.
 
 
 Splitting up compilation into multiple stages:
