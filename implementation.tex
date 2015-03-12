@@ -119,28 +119,20 @@ allows for checking which sections of code still need to be tested and assists
 in writing further unit tests.
 
 
-Splitting up compilation into multiple stages:
+\section{Structure}
+Compilation is split up into multiple stages or "passes",
+it is possible to compile in one pass but modularising each 
+specific section of compilation allows modularity and decoupling.
+
+This flow chart illustrates the basic structure of the Compiler
+and its multiple stages:
+
+
+\begin{center}
+\includegraphics{graphs/Dissertation.pdf}
+\end{center}
     
-    Parsing/Lexing into AST
-
-         |
-
-     Type and Scope Checking the AST
-
-         |
-
-     Strip annotations and types from the AST
-
-        |
-
-     Evaluator which steps through the code and generates a 
-     GPIR AST
-
-        |
-
-      Translate GPIR AST into GPIR source code
-
-\section{Parser/Lexer}
-\section{Type and Scope checking}
-\section{Evaluation}
-\section{GPIR Code Generation}
+\subsection{Parser/Lexer}
+\subsection{Type and Scope checking}
+\subsection{Evaluation}
+\subsection{GPIR Code Generation}
