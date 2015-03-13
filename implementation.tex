@@ -133,6 +133,77 @@ and its multiple stages:
 \end{center}
     
 \subsection{Parser/Lexer}
+
+
 \subsection{Type and Scope checking}
+
+Type and Scope checking is done together as. to check the type of
+an expression, the variables have to be in scope to get the type from.
+The idea is to first type and scope check all top level constructs (object declarations, constuctors,
+assignments) then map the checker over all functions.
+
+For checking over top level statements we have a data structure as follows:
+
+\begin{lstlisting}[style=myHaskell]
+type VarTable = M.Map (Ident SrcPos) (Type SrcPos)
+type FunTable = M.Map (Ident SrcPos) (Type SrcPos, [Type SrcPos])
+type ObjectTable = M.Map (Ident SrcPos) (Objects SrcPos)
+
+data MainBlock = MainBlock {
+    _tlFuncDefs      :: FunTable, -- ^ Function Definitions
+    _tlVarTypes      :: VarTable,  -- ^ Top Level Constant variable types
+    _objects         :: ObjectTable  -- ^ Table of current Kernel objects declared 
+} deriving (Show)
+\end{lstlisting}
+
+We need to check no duplicate functions exist, no duplicate top level variables,
+and that constructor assignments to objects are correct. Once all top level statements have
+been checked, all functions in scope stores, all top level variables stored, and all variables stored.
+We can then type and scope check each individual function.
+
+We need a slightly different stucture to type check functions.
+
+At anytime we need to know what variables we currently have in scope, their types,
+what functions are avilable to call, their argument types, and return types. What objects
+are available to call methods on. Also the current function we 
+
+We can store these in a structure:
+
+\begin{lstlisting}[style=myHaskell]
+
+data CodeBlock = CodeBlock {
+    _currentFun :: Ident SrcPos, -- ^ Name of Function block is in
+    _funcDefs   :: FunTable, -- ^ Function names and return/argument types
+    _prevVars   :: VarTable, -- ^ Identifiers visible in current scope with types
+    _curVars    :: VarTable  -- ^ Identifiers declared in current scope
+} deriving (Show)
+
+
+\end{lstlisting}
+
+When a function is being type check we need to create a new CodeBlock instance
+from a MainBlock instance. Store the details of the function that is being entered
+in "currentFun", copy all functions we have in scope to "funcDefs", and set prevVars
+to all the top level variables, with objects (stored as an object variable type).
+
+
+Whenever we encounter a new scope (calling a function, or a seq/par block)
+we create a new CodeBlock structure using the current structure, with a new set
+of curVars, current curVars set to prevVars. If encountering a new function
+we set the currentFun. funcDefs is copied, as currently the language doesn't support
+nested functions.   
+
+Using the State Monad we can create new CodeBlocks by appearing to update values.
+We can calculate the current scope as curVars remove prevVars as any variables declared
+in the current scope that are present in the previous scope the current scope variable is used.
+If the variable is only in the previous scope then that one is used.
+
+When type checking a function we type check every statement in the function,
+for every statement, we type check the expressions within the statement.
+
+We use a custom ErrorMonad which contains error messages for specific errors,
+using a monad stack with the State Monad. When we check for an error and lift
+it into the stack, if an error is raised then type checking stops.
+
 \subsection{Evaluation}
 \subsection{GPIR Code Generation}
