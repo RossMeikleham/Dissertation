@@ -3,8 +3,32 @@
 Cilk Plus is a general purpose programming language based on C++. It extends the C++ language with features such as
 parallel for loops and spawning functions in parallel using a "fork-join" model to achieve task-parallelism.
 
-One of the main princeples of the Cilk language is that the programmer should be responsible for exposing the parallelism
-in their code. The runtime should then have the responsibility of scheduling the threads, and dividing work between
-processors. 
+One of the main princeples of the Cilk language is that abstraction is important and that the programmer should use provided constructs to expose 
+the parallelism in their application, allowing the programmer to be free to focus on what the code is allowed to execute in parallel and not worry about the underlying details of manually managing threads. The runtime should then have the responsibility of scheduling the threads, and dividing work between
+processors.\cite{cilkfaq} 
+
+Cilk Plus introduces 3 new keywords ontop of the C++ language\cite{cilk}: 
+\begin{itemize}
+    \item \textit{cilk\_for} - Parallelizing for loops, uses the exact same syntax as the standard C++ for-loop
+                             with some restrictions.
+    \item \textit{cilk\_spawn} - Indicate that a given function can run in parallel with the remainder
+                              of the calling function. 
+    \item \textit{cilk\_sync} - Wait for all spawned calls to finish.
+\end{itemize}
+
+Cilk Plus applications have "serial semantics"\cite{cilk}, this means that the results of an application run
+in parallel with Cilk Plus would be exactly the same if it were run
+serially (\textit{cilk\_spawn} becoming a function call, removing \textit{cilk\_sync} statements, 
+and replacing \textit{cilk\_for} with ordinary for loops).
+
+Cilk Plus makes use of pragmas to indicate to the compiler that a for loop contains data parallelism.\cite{cilkfaq}
+
+Cilk Plus also introduces a new operator \textbf{[:]} to select array sections\cite{cilkarray}. This operator
+allows for "high level" operaions to be performed on arrays, and can help the compiler vectorize parts of code.
+
+The Cilk Plus runtime makes use of "task stealing" for dynamic load balancing\cite{cilkfaq}. This 
+means that if one thread is idle the scheduler can reassign work assigned to be completed by a busier thread. 
+The outcome of this is that the programmer doesn't have to worry about the specifics of which threads
+to map tasks to, and it can be left to the rutime itself.
 
 

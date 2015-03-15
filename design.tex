@@ -19,6 +19,9 @@ is like C++ and can be mapped onto GPIR without too much trouble.
         power to do stuff. 
 
 
+\subsection{Serial Semantics}
+
+
 \subsection{Purely Functional}
 
 In the GPRM jumping to labels is an expensive operation, to avoid
@@ -250,7 +253,7 @@ For loops have the same syntax as C/C++ for loops with some restrictions:
 \begin{itemize}
 \item There is a single loop variable which must be declared inside the loop, and must be an integer.
 
-\item The condition part of the the for loop must result in a "pure" boolean type, a GPRM::Kernel boolean
+\item The conditional expression must result in a "pure" boolean type, a \textit{GPRM::Kernel::bool}
      type is not allowed.
 
 \item The "afterthought" of the for loop must consist of the loop variable with either the "+=" operator
@@ -260,9 +263,15 @@ For loops have the same syntax as C/C++ for loops with some restrictions:
 \end{itemize}
 
 These restrictions and properties are in place to keep the functional "purity" of GPC code,
-as well as completel compatibility with the C++ language.  
+as well as completely compatibility with the C++ language.  
 At compile time the loop is fully unrolled, these restrictions also allow for detection
 at compile time whether or not the loop is infinite.  
+
+It's worth noting that these restrictions are similar to the restrictions on the \textit{cilk\_for} loop.
+The \textit{cilk\_for} loop must declare a single initial loop variable, the conditional expression must 
+compare the loop variable with a constant "termination expression", and the "afterthought" must either increment
+or decrement the loop variable by some amount.
+\cite{cilkfor}
 
 An example of a for loop is as follows:
 
