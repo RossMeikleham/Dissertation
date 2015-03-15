@@ -1,22 +1,22 @@
 \chapter{Implementation}
 
 
-\section{Language Choice}
+\section{Implementation Language Choice}
 
 The compiler will be implemented using the Haskell programming language.
 
-Functional languages are suited for building compilers.
-This is due to the traversal of trees which occurs often during complication.
-Functional languages typically have features such as pattern matching and tail-end recursive optimisation 
-which make them suitable for traversing trees.
+During complication the need to traverse trees usually occurs quite
+often. Functional languages like Haskellare suited to this task 
+due to features such as pattern matching and tail-end recursive optimisation 
+which make traversing trees efficient and simple to implement/ 
 
 The Glasgow Haskell Compiler is available for most platforms, most importantly for Windows, OSX and Linux 
 on x86 architectures. This allows the compiler to be portable across these platforms provided the libraries 
 used to build the compiler are portable.
 
 Haskell has algebaric datatypes, these makes Abstract Syntax Trees
-simpler to implement. For example the AST for a very simple grammer
-in Haskell can be represented as follows:
+simpler to implement. For example the AST for a very simple expression
+can be representedas follows:
 
 \begin{lstlisting}[style=myHaskell]
 

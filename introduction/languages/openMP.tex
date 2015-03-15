@@ -1,7 +1,38 @@
 \subsection{Open MP}
 
 OpenMP (Open Multi-Processing) is a language extension available for C, C++ and Fortran which allows for shared memory multi-processing. 
-This is achieved by the use of compiler directives (more specifically in C/C++ this is done through the preprocessor using pragmas). 
-This allows a compiler which doesn't implement OpenMP extensions to still compile C/C++ code
-and run it in a linear fashion, and serial code can be made parallel purely through the use of preprocessor
-directives without modification to the actual source code.  
+This is achieved by the use of compiler directives (more specifically in C/C++ this is done through the preprocessor using pragmas) and
+the OpenMP API.\cite{openmp}.
+
+OpenMP's use of pragmas for parallel programming means that parallel code keeps sequential semantics
+and any compiler which doesn't implement OpenMP extensions can still compile the code by ignoring the pragmas.
+The results of executing the program serially without the pragmas should be exactly the same as when
+the sections are parallelized. Another benefit is that sections of serial programs can be
+parallelized by adding pragmas and existing code doesn't need to be modified.
+
+For example, given a simple for loop below:
+
+\begin{lstlisting}[style=myGPC]
+for(int i = 0; i < 10; i++) {
+    arr[i] =  do_calculation(i);
+}
+\end{lstlisting}
+
+We can parallelize this code by simply adding a pragma above
+the for loop:
+
+\begin{lstlisting}[style=myGPC] 
+#pragma omp parallel for
+for(int i = 0; i < 10; i++) {
+    arr[i] =  do_calculation(i);
+}
+\end{lstlisting}
+
+OpenMP also supports task parallelism as of version 3.0\cite{openmp3}. The specification for OpenMP
+does not specify how the scheduler should work, and no specific implementations of OpenMP appear to have 
+implemented a task stealing scheduler.
+
+A downside to using pragmas is that accidentally missing certain directive keywords may cause undersirable 
+program behaviour such as unecessary parallelization\cite{openmptraps}, and no warnings will be given by the compiler.
+
+ 
