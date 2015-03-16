@@ -101,3 +101,23 @@ store their return value when evaluated. An improvement to function evaluation t
 reduction of "pure functions" would result in generating this simpler GPIR code:
 
 \lstinputlisting[style=myGPIR]{code_samples/pureFunImproved.td}
+
+
+\subsection{Register Tracking}
+As explained in section {insert section}, the register tracking is non existent and every
+time a new value needs to be stored the register counter is just updated. After a while this
+could possibly use a lot of memory. A more efficient method would be to track registers
+being used, once a variable goes out of scope then that register gets "freed".
+
+The "free list" can be implemented in Haskell as a simple linked list containing the numbers
+of registers that are free. Every time a register is "freed" its number gets added
+to the tail of the queue. When attempting to assign a variable a register the list is checked
+to see if it has any free registers on it, if it is then the head of the queue is taken
+as the register number. Otherwise the total register counter is incremented and the new value
+is used as the register number.
+
+In a scope keep track of all the register numbers allocated, once out of scope then add every
+one of those numbers to the "free list", as the values in those register will not need
+to be used again. This method of register tracking and freeing will use far less total
+registers than using a new register for each value.
+
