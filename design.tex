@@ -324,3 +324,16 @@ par {
 Top Level statements are restricted to being either object declarations, function definitions,
 or constant variable assignments. This is partly to be like C++ and also to remove any ambiguity
 on how top level statements are evaluated.
+
+
+\subsection{Entry Function}
+Since the GPIR function is called by C++ code, it's not preferrable to name the function "main".
+Also the C++ code may be calling more than one GPIR function during its lifetime so a static
+name is also not preferable. The GPIR code entry function has the same name as the GPC source
+file it is in. For example the entry function  for "test.gpc" would be called "test". This method
+of determining an entry function is not ideal, but is easy to change in the future if needed.
+
+
+
+
+

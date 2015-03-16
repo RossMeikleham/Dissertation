@@ -250,19 +250,25 @@ When type and scope checking the original AST doesn't need to be modified, only 
 that it follows the type and scope rules of the language.
 
 
-\subsection{Evaluation}
+\subsection{Interpreting}
 
 The goal of this stage is to run through the execution path the GPIR code
 will take from the entry function, and partially evaluate the code as much
 as possible while generating the GPIR AST.
 
 Just before Evaluation the AST is transformed slightly into a similar AST
-with two differences. One is that annotations are not present (since source position information
+with a couple of differences. One is that annotations are not present (since source position information
 is not needed anymore), and type information is stripped (since the program has been proven to 
-not have any type errors).
+not have any type errors), also objects in the top level scope are stripped. (Since scope checking
+proved that all methods are called on objects that exist, and whenever a method is called, the
+name of the object is part of the call).
 
+Initially the values of all top level assignment statements need to be stored
+as constants before executing, as well as every function.
 
-
+While interpreting a state is needed to determine actions taken
+during certain sections, as well as to evaluate expressions.
+The following Haskell record is used:
 
 \begin{lstlisting}[style=myHaskell]
 
@@ -283,6 +289,64 @@ data CodeGen = CodeGen {
 }
 
 \end{lstlisting}
+
+
+\subsection{Thread Mapping}
+Each task in the GPRM must be mapped to a thread. There is a function
+in the Interpreter called "getThread" which calculates what the next thread 
+number should be to map the task to based on the current block state.
+
+Currently this function uses a simple incremental scheme and rolls around
+modulo style after the max number of threads have been specified. The compiler
+attempts to work out the maximum number of cores on the machine if a thread
+number isn't given, and uses this number to determine the max number of threads.
+
+If a different scheme is needed the contents of the function will need to be changed,
+a possible future improvement may be to pass a function to the interpreter when passing
+it the AST to determine the counting scheme. This would allow for multiple different schemes
+to be chosen and possibly tuned depending on the type of application.
+
+
+\subsubsection{Branching}
+When encountering an if statement the interpreter must be able to evaluate the condition and generate a
+true or false value. The interpreter will only evaluate the statement within the if statement
+if the condition is true. In the case of an if-else statement either the first statement will
+be evaluated or the else statement depending on the value of the condition.
+
+
+\subsubsection{Returning}
+Performing a return is a bit tricky. 
+
+Some pre-evaluation is needed  on blocks of statements when entering a 
+new block. if a return statement is
+in the current block of statements (not counting sub-blocks) then
+any statements after that are "removed", and when a return statement
+is found, it is evaluated as the return expression.
+What this means is that once the return is met, the interpreter
+"returns" back to the code which executed the previous scope.
+
+There are also two different scenarios when performing a return.
+
+If the interpreter is in a function at the top level of the function:
+Returning is simple in this case, all that is needed to be done is
+going to the previous scope.
+
+If the interpreter is nested within one or more blocks in a function:
+Returning in this case involves going up multiple times until the interpreter
+is out of the scope of the current function.
+
+To deal with these situations a "boilerplate" function is used. This function
+is called whenever an inner-scope needs to be interpted. It
+takes a boolean value which determines if the current block scope is at
+the "top" of a function, gets the current state and then interprets the block.
+Once the interpreter returns from interpreting the inner block, the "\_isReturning"
+flag is checked on the returned state. If it is set, and the scope
+of the current block is at the top of a function, then the "\_isReturning" flag
+is then set for the current block.
+ 
+When the "\_isReturning" flag is set for a block, the evaluator will not evaluate
+any further statements in the further block. This allows for propogation of a "return"
+up the block states until the current function is exited.
 
 \subsection{GPIR Code Generation}
 
