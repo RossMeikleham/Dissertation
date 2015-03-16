@@ -1,7 +1,7 @@
 \chapter{Design}
 
 The goal is to create a C-like language which then compiles down to GPIR code.
-The language should be as C-like as possible ideally we would like it to be as much
+The language should be as C-like as possible ideally it should be as much
 of a complete subset of C++ as possible.
 
 C++ is a statically typed, imperative language which is sequentially evaluated by default.
@@ -90,7 +90,7 @@ GPRM::Kernel namespace, and anything passed into a kernel object method call mus
 namespace. This allows passing impure values between kernel methods but restricts them being used
 for conditional statements. Essentially we still have side effects but they're restricted to
 only being in Kernel space and not in the GPRM. The execution of GPC code is then purely functional
-and we can easily determine the execution path of code at compile time.
+and the execution path of code can be determined at compile time without oo much difficulty.
 
 \section{GPC Language Features}
 
@@ -109,13 +109,28 @@ and we can easily determine the execution path of code at compile time.
         in parallel, but the par keyword makes it more explicit especially if there's lots of nested
         seq/par blocks.
 
+\subsection{Objects}
+Objects can be declared in the top level scope, and must be in the GPRM::Kernel namespace.
+For example declaring a test object from a class called Test in the GPRM Kernel namespace:
+
+\begin{lstlisting}[style=myGPC]
+GPRM::Kernel::Test test;
+\end{lstlisting}
+
+Standard C++ method calling syntax can be applied to objects.
+\begin{lstlisting}[style=myGPC]
+test.m1();
+\end{lstlisting}
+
+
+
 \subsection{Compatibility with C++}
 Making the language completely compatible with C++ in that all GPC code can be
 compiled with a C++11 compatible compiler allows programers that are familiar to
 C++ write GPC code with little difficulty. As long as they are aware of the restrictions
 that GPC has compared to C++. However the new keywords "seq" and "par" are not in the language.
 
-Currently preprocessor directives aren't supported in GPC so in the compiler we can
+Currently preprocessor directives aren't supported in GPC so the compiler can
 just ignore lines starting with "\#", and define "seq" and "par" as no-ops. 
 For example this snippet of code compiles with both the GPC compiler and 
 C++ compilers:
@@ -304,3 +319,8 @@ par {
 }
 \end{lstlisting}
 
+
+\subsection{Top Level Statement Restrictions}
+Top Level statements are restricted to being either object declarations, function definitions,
+or constant variable assignments. This is partly to be like C++ and also to remove any ambiguity
+on how top level statements are evaluated.
