@@ -133,7 +133,7 @@ specific section of compilation allows modularity and decoupling.
 \end{figure}
 
     
-\subsection{Parser/Lexer}
+\section{Parser/Lexer}
 The Parsec library combines Parsing and Lexing into one stage.
 
 Given the GPC source file the intention is to parse the file into an AST
@@ -149,7 +149,7 @@ this stage is building the parser combinator functions and composing
 them together to be able to build the AST.
 
 
-\subsection{Type and Scope checking}
+\section{Type and Scope checking}
 
 During type checking the types of identifiers from the current scope being used in expressions need
 to be known. Since the scope needs to be kept track of while type checking it makes reasonable
@@ -223,8 +223,7 @@ is copied if entering a block, otherwise if entering a function the function nam
 and source position are copied. 
 
 The value of the new "\_prevVars" is a little more complicated to work out.
-Any key, value pairs in the current "\_curVars" are stored plus any key, value
-pairs in the current "\_prevVars" in which the key isn't present in the current 
+Any key, value pairs in the current "\_curVars" are stored plus any key, value pairs in the current "\_prevVars" in which the key isn't present in the current 
 set of "\_curVars" keys. This is because
 the identifiers in "\_curVars" scope are visible over the identifiers with
 the same name in "\_prevScope". Haskell's union operation on maps
@@ -250,7 +249,7 @@ When type and scope checking the original AST doesn't need to be modified, only 
 that it follows the type and scope rules of the language.
 
 
-\subsection{Interpreting}
+\section{Interpreting}
 
 The goal of this stage is to run through the execution path the GPIR code
 will take from the entry function, and partially evaluate the code as much
@@ -291,6 +290,104 @@ data CodeGen = CodeGen {
 \end{lstlisting}
 
 
+\subsection{Registers}
+Values which can be fully evaluated at compile time can be subsituted into the
+GPIR code with their literal value when they are used.
+
+For example:
+
+\begin{lstlisting}[style=myGPC, frame=single]
+seq {
+    int x = 4 * 5;
+    obj.m1();
+    obj.m2(x + 3);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[style=myGPIR, frame=single]
+seq (
+     '(obj.m1[0]) 
+     '(obj.m2[0] '23)
+)
+\end{lstlisting}
+
+The value of "x" is able to be calculated to be 20, so whenever
+"x" is used in the scope it can simply be replaced with the literal "20".
+
+However, some variables will not be able to be fully evaluated at compile time.
+So results will have to be written to GPIR registers.
+
+For example:
+
+\begin{lstlisting}[style=myGPC, frame=single]
+seq {
+    int x = obj.m1();
+    obj.m2(x);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[style=myGPIR, frame=single]
+seq (
+     '(register.write[0] '1 'obj.m1[0]) 
+     '(obj.m2[0] (register.read[0] '1))
+)
+\end{lstlisting}
+
+The value of x can't be known at compile time so it is written into register 1,
+and then read from the same register when it is needed.
+
+During interpreting, there needs to be no conflict between registers (e.g. if a value
+is stored in register 1 that will need to be used later, register 1 cannot be written to
+until that value is out of scope). There's no hard limit on registers so a simple
+method of just incrementing the register count every time a value needs to be stored
+is implemented, although this may possibly cause a lot of unecessary memory usage.
+
+"\_varRegTable" is used to store the mappings of variable names to register numbers. 
+Conflicts between variables with the same name in different scopes is not a problem,
+as the register table in the inner block is thrown away once the scope is left.
+
+\subsection{Sequential And Parallel Block Differences}
+A sequential block translates to something different in GPIR than a parallel block.
+
+For example, these two snippets compile to different GPIR code despite
+the blocks containing the same code:\\
+
+
+\begin{minipage}{.48\textwidth}
+\center \textbf{GPC Parallel}
+\begin{lstlisting}[style=myGPC, frame=single]
+par {
+    obj.m1();
+    obj.m2();
+}
+\end{lstlisting}
+
+\center \textbf{GPIR Parallel}
+\begin{lstlisting}[style=myGPIR, frame=single]
+(par obj.m1[0] obj.m2[1])
+\end{lstlisting}
+\end{minipage}
+\hfill
+%
+%
+\begin{minipage}{.48\textwidth}
+\center \textbf{GPC Sequential}
+\begin{lstlisting}[style=myGPC, frame=single]
+seq {
+    obj.m1();
+    obj.m2();
+}
+\end{lstlisting}
+
+\center \textbf{GPIR Sequential}
+\begin{lstlisting}[style=myGPIR, frame=single]
+(seq `obj.m1[0] `obj.m2[1])
+\end{lstlisting}
+\end{minipage}
+ 
+Sequential statements need to be "quoted", which is why the record contains
+the "\_seqBlock" flag, so the interpreter can generate the correct GPIR code.
+
 \subsection{Thread Mapping}
 Each task in the GPRM must be mapped to a thread. There is a function
 in the Interpreter called "getThread" which calculates what the next thread 
@@ -307,14 +404,14 @@ it the AST to determine the counting scheme. This would allow for multiple diffe
 to be chosen and possibly tuned depending on the type of application.
 
 
-\subsubsection{Branching}
+\subsection{Branching}
 When encountering an if statement the interpreter must be able to evaluate the condition and generate a
 true or false value. The interpreter will only evaluate the statement within the if statement
 if the condition is true. In the case of an if-else statement either the first statement will
 be evaluated or the else statement depending on the value of the condition.
 
 
-\subsubsection{Returning}
+\subsection{Returning From Functions}
 Performing a return is a bit tricky. 
 
 Some pre-evaluation is needed  on blocks of statements when entering a 
@@ -336,7 +433,7 @@ Returning in this case involves going up multiple times until the interpreter
 is out of the scope of the current function.
 
 To deal with these situations a "boilerplate" function is used. This function
-is called whenever an inner-scope needs to be interpted. It
+is called whenever an inner-scope needs to be interpreted. It
 takes a boolean value which determines if the current block scope is at
 the "top" of a function, gets the current state and then interprets the block.
 Once the interpreter returns from interpreting the inner block, the "\_isReturning"
@@ -345,10 +442,20 @@ of the current block is at the top of a function, then the "\_isReturning" flag
 is then set for the current block.
  
 When the "\_isReturning" flag is set for a block, the evaluator will not evaluate
-any further statements in the further block. This allows for propogation of a "return"
+any further statements in the current block. This allows for propogation of a "return"
 up the block states until the current function is exited.
 
-\subsection{GPIR Code Generation}
+
+\subsection{Inlining Functions}
+When encountering a function call, the function needs to be inlined.
+To do this every expression passed to the function
+
+\subsection{For Loop Evaluation}
+
+\subsection{Partial Expression Evaluation}
+
+
+\section{GPIR Code Generation}
 
 
 

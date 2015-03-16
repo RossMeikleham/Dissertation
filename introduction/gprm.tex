@@ -4,7 +4,8 @@
 
 The Glasgow Parallel Reduction Machine is a virtual machine framework for multi-core programming using a task-based approach. It allows the programmer to structure their programs as a seperation of task-code (written as C++ classes) and communication code. 
 
-Communication code is currently written in a language called GPIR which is a purely functional S-expression based language that is evaluated in parallel by default with optional sequential evaluation semantics. GPIR code controls how tasks communicate with one another and whether groups
+Communication code is currently written in a language called GPIR (Glasgow Parallel Intermediate Representation). 
+GPIR code controls how tasks communicate with one another and whether groups
 of tasks can be evaluated sequentially or in parallel.  GPIR code is compiled down further to GPRM byte-code which is evaluated by the GPRM virtual machine.
 
 The GPRM uses task nodes which consists of a task kernel and a task manager.
@@ -26,4 +27,39 @@ is represented as a function which can be called from a C++ program.\cite{GPRM}
 \end{figure}
 
 \subsection{The GPIR language}
-TODO, quick overview of GPIR syntax
+
+The GPIR language is a purely functional S-expression based language that is evaluated in parallel by default 
+with optional sequential evaluation semantics.
+
+Tasks in GPIR are postifxed with a thread number to indicate to the GPRM runtime which thread
+the task should run on. For example a simple GPIR program which adds numbers in parallel:
+
+\begin{lstlisting}[style=myGPC]
+(begin
+    +[0] (+[0] '3 '2) (+[1] '4 '10)
+)
+\end{lstlisting}
+
+The two nested additions are performed in parallel, with the first being mapped onto thread 0,
+and the second being mapped onto thread 1. When they've both been evaluated, then the outer addition
+with add the results on thread 0.
+
+\subsubsection{Quoting}
+
+Like in Scheme and Lisp, quoting deffers the evaluation. This is useful for performing sequential evaluation.
+
+\begin{lstlisting}[style=myGPC]
+(seq 
+    '(obj.m1[0] '1)
+    '(obj.m2[0] '2)
+)
+\end{lstlisting}
+
+Due to the parallel evaluation of GPIR, if the expressions in the seq block wern't quoted then
+they would get evaluated in parallel instead of being deffered to be evaluated by the seq function.
+
+Also literal values don't need to be evaluated, they should be deferred and passed to tasks which is
+the reason the numbers are quoted in these examples.
+
+The GPIR language has other keywords and features but these are the ones that are important for
+understanding the examples and design choices made for this project.
