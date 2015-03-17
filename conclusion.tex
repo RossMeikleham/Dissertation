@@ -1,10 +1,45 @@
 \chapter{Conclusion}
 
-
 \section{Benchmarks}
+
+The MergeSort algorithm has been implemented in GPC for 80 million integers with a cutoff value 
+of 2048. The actual sorting and merging is performed by the \textit{MergeSort} kernel class
+method \textit{MergeSort.serial\_ms} and \textit{MergeSort.merge\_two}. The GPC code structures
+how the Kernel tasks should interact and calls them in parallel.\\ 
 
 \lstinputlisting[style=myGPC]{code_samples/GPRM_MergeSort.gpc}
 
-\begin{center}
-\includegraphics[scale=0.5]{graphs/benchmark.png}
-\end{center}
+This code is compiled into GPIR code by the compiler from the command line by entering \textit{gpcc GPRM\_MergeSort.gpc --threads=240}
+where the \textit{threads} argument is an optional to manually adjust the number of total threads that are available
+to map tasks onto.
+
+\newpage
+
+\begin{figure}[!htb]
+\pdfimageresolution=110
+\includegraphics{graphs/benchmark.png}
+\caption{Mergesort Benchmarks for parallel frameworks \cite{GPRMBench}}
+\label{fig:bench}
+\end{figure}
+
+The compiler compiles the MergeSort GPC code into GPIR code identical to the GPIR code used to generate figure ~\ref{fig:bench}.
+The \textit{MergeSort} C++ Kernel class is also the same one used.
+
+\section{Summary}
+The main goal of the project was to create a C-like language for the GPRM.
+I believe that goal has been met as the language designed and implemented 
+in this project is a purely functional parallel evaluation language which is an exact subset of C++ 
+(apart from the two extra keywords). The language can be partially evaluated and compiled down to GPIR code 
+which can be further compiled to be run on the GPRM. 
+
+Methods and techniques that can be applied to interpret and partially evaluate purely
+functional code have also been explored.
+
+This project also leaves a lot of oppertunities for future work. Compilers and Programming Languages in general have
+multiple areas where there are constantly improvements to be made, most notably in language features and optimisations 
+for code generation. A couple of possible improvements are explored in Chapter ~\ref{ch:future}.
+
+
+
+
+

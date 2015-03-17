@@ -124,7 +124,6 @@ Compilation is split up into multiple stages or "passes",
 it is possible to compile in one pass but seperating each 
 specific section of compilation allows modularity and decoupling.
 
-\newpage
 \begin{figure}[!htb]
 \begin{center}
 \includegraphics{graphs/Dissertation.pdf}
@@ -471,11 +470,86 @@ is replaced by the expression (5 * 4). The nested "a" is not the same
 instance and is not substituted.
 
 
-
 \subsection{For Loop Evaluation}
 
-\subsection{Partial Expression Evaluation}
+For evaluating and unrolling for loops each loop statement needs to be evaluated
+until the loop variable doesn't satisfy the condition. 
 
+\begin{itemize}
+\item The iterate function in Haskell can be used to infinitely apply the afterthought function
+of the loop to generate loop variable values for each iteration.
+
+\item Then values are taken from this list and are applied to the loops condition until
+one fails. This creates a list of loop variables values for all iterations. 
+
+\item This value list is then mapped to the statements in the loop body replacing any instance
+of the loop variable. This unrolls the loop.
+
+\item Then each statement is then evaluated. 
+\end{itemize}
+
+
+It is also possible to detect cases of infinite loops based on the loop variable, 
+the conditional, and afterthought statements, before attempting to unroll the loop.
+
+For example the following for loop will loop infinitely (Ignorning overflow of integers, which is undefined in most C/C++ standards).
+\begin{lstlisting}[style=myGPC]
+for (int i = 0; i < -1; i++) {
+    obj.m1(i);
+}
+\end{lstlisting}
+
+
+\subsection{Partial Expression Evaluation}
+When evaluating an expression there are two major parts:
+
+\begin{itemize}
+    \item Replacement - All identifiers in the expression which have a value in the constant table are
+          replaced with the respective constant value.
+
+    \item Reduction - Attempt to evaluate as much of the replaced expression as possible
+
+\end{itemize}
+
+Replacement is trivial, using the constant table for the current scope the
+expression AST is recursively travelled and any instances of identifiers
+in the constant table are replaced
+
+
+Reduction is a bit more complex, it involves attempting to apply the binary
+and unary operations to their respective expressions. Expressions can be
+represented in a binary expression tree. Binary operators are contained in
+the inner nodes with 2 children, unary operators contained in the inner
+nodes with 1 child. Leaf nodes contain literal values and variables.
+
+For example the expression \texttt{5 * 3 - 2 + \textasciitilde2} when read in by the
+compiler is represented by the following tree:
+
+\begin{center}
+\includegraphics[scale=0.5]{graphs/impleval.pdf}
+\end{center}
+
+
+The tree is evaluated through
+postorder traversal. Once two leaf nodes are found the binary operation in the parent node
+is attempted to be applied to the two leaf nodes, or if one leaf node is found
+with no other node the unary operation in the parent node is applied
+to the leaf.  
+
+In the case of a binary operation if both leaf nodes are values which
+can be calculated at compile time the expression is evaluated, the two leaf nodes
+are removed and the parent node is replaced with the calculated value. If one or
+more leaf nodes are values which can only be known at runtime then the expression is
+not evaluated and the tree doesn't change. 
+
+In the case of a unary operation if the leaf node is a value which can be calculated
+at compile time the expression is evaluated, otherwise the expression is not evaluated
+and the tree doesn't change.
+
+This method isn't optimal as there are expressions which are possible to
+reduce further than this method can achieve in the case when some sub-expressions
+cannot be evaluated at compile time. This problem and a possible solution
+are discussed in Chapter ~\ref{ch:future}.
 
 \section{GPIR Code Generation}
 

@@ -1,6 +1,5 @@
 \chapter{Future Work}
-
-Future Features that could be added:
+\label{ch:future}
 
 \section{Configuration file generation}
     yml config generation.
@@ -10,8 +9,15 @@ Future Features that could be added:
 
 
 \section{Language Features}
-    Other C++ language features, C++11 lambdas may be useful,
-    while-loops, and possibly some STL support e.g. ability to use STD vector instead of pointers.
+    There are many ways the GPC language can be extended to have more
+    functionality. A couple of noteable features are:
+    \begin{itemize}
+        \item C++11 lambdas - giving the language the ability to implement higher order functions.
+        \item Templates - giving the ability to use some C++ Standard Template Library structures such as Vectors.
+        \item Header/Module system - currently a GPC source file has no way of including GPC code
+    from other files.
+
+    \end{itemize} 
 
 \section{Compiler Optimisations}
 
@@ -23,26 +29,16 @@ Given the following GPC code:
 
 \lstinputlisting[style=myGPC]{code_samples/binaryOp.gpc}
 
-In line 8, the expression within the m2 method call results in part of the Abstract Syntax Tree
-which is represented as a Binary Expression Tree when parsed. Binary operators are contained in
-the inner nodes with literal values and variables at the leaf nodes. 
 
 \begin{center}
-\includegraphics[scale=0.4]{graphs/evalTree.png}
+\includegraphics[scale=0.5]{graphs/evalTree.pdf}
 \end{center}
 
-During the evaluation stage of compilation the tree is evaluated through
-postorder traversal. Once two leaf nodes are found the binary operation in the parent node
-is attempted to be applied to the two leaf nodes. If both leaf nodes are values which
-can be calculated at compile time the expression is evaluated, the two leaf nodes
-are removed and the parent node is replaced with the calculated value. If one or
-more leaf nodes are values which can only be known at runtime then the expression is
-not evaluated and the tree doesn't change. 
 
 The tree above once evaluated transforms into the following tree: 
 
 \begin{center}
-\includegraphics[scale=0.4]{graphs/fullyEvalTree.png}
+\includegraphics[scale=0.5]{graphs/fullyEvalTree.pdf}
 \end{center}
 
 We can see this reduction in the generated GPIR code:
@@ -66,13 +62,13 @@ left as future work.
 In this example, one "optimal" transformation of the tree would result in the following tree:
 
 \begin{center}
-\includegraphics[scale=0.4]{graphs/optimalEvalTree.png}
+\includegraphics[scale=0.5]{graphs/optimalEvalTree.pdf}
 \end{center}
 
 The evaluator would then reduce this tree down to the following tree:
 
 \begin{center}
-\includegraphics[scale=0.4]{graphs/optimalFullyEvalTree.png}
+\includegraphics[scale=0.5]{graphs/optimalFullyEvalTree.pdf}
 \end{center}
 
 This generates much simpiler GPIR code:
