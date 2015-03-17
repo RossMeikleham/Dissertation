@@ -3,14 +3,14 @@
 \section{Benchmarks}
 
 The MergeSort algorithm has been implemented in GPC for 80 million integers with a cutoff value 
-of 2048. The actual sorting and merging is performed by the \textit{MergeSort} kernel class
-method \textit{MergeSort.serial\_ms} and \textit{MergeSort.merge\_two}. The GPC code structures
+of 2048. The actual sorting and merging is performed by the \texttt{MergeSort} kernel class
+method \texttt{MergeSort.serial\_ms} and \texttt{MergeSort.merge\_two}. The GPC code structures
 how the Kernel tasks should interact and calls them in parallel.\\ 
 
 \lstinputlisting[style=myGPC]{code_samples/GPRM_MergeSort.gpc}
 
-This code is compiled into GPIR code by the compiler from the command line by entering \textit{gpcc GPRM\_MergeSort.gpc --threads=240}
-where the \textit{threads} argument is an optional to manually adjust the number of total threads that are available
+This code is compiled into GPIR code by the compiler from the command line by entering \texttt{gpcc GPRM\_MergeSort.gpc --threads=240}
+where the \texttt{threads} argument is an optional to manually adjust the number of total threads that are available
 to map tasks onto.
 
 \newpage
@@ -23,7 +23,7 @@ to map tasks onto.
 \end{figure}
 
 The compiler compiles the MergeSort GPC code into GPIR code identical to the GPIR code used to generate figure ~\ref{fig:bench}.
-The \textit{MergeSort} C++ Kernel class is also the same one used.
+The \texttt{MergeSort} C++ Kernel class is also the same one used.
 
 \section{Summary}
 The main goal of the project was to create a C-like language for the GPRM.

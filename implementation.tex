@@ -208,24 +208,25 @@ data CodeBlock = CodeBlock {
 
 When a function is being type check a new CodeBlock instance needs to be
 created from a MainBlock instance, as some of the top level information is needed.
-The details of the function that is being entered is stored in "\_currentFun", 
-details of all available functions stored in "\_funcDefs", and store all
-top level variable in "\_prevVars". "\_curVars" is left as an empty map as the
+The details of the function that is being entered is stored in \texttt{\_currentFun}, 
+details of all available functions stored in \texttt{\_funcDefs}, and store all
+top level variable in \texttt{\_prevVars}. \texttt{\_curVars} is left as an empty map as the
 type checking of the function hasn't begun yet. Top level objects are also
-stored in "\_curVars" as an "object" variable type.
+stored in \texttt{\_curVars} as an "object" variable type.
 
 Whenever a new scope is encountered by either calling a function, or entering a seq/par block;
-A new CodeBlock structure is created using the current structure. The new "\_curVars"
-is set to the empty map as no variables have been encountered yet, the "\_funcDefs"
-are copied as all functions are on the top level so they don't change. The "\_currentFun"
+A new CodeBlock structure is created using the current structure. The new \texttt{\_curVars}
+is set to the empty map as no variables have been encountered yet, the \texttt{\_funcDefs}
+are copied as all functions are on the top level so they don't change. The \texttt{\_currentFun}
 is copied if entering a block, otherwise if entering a function the function name
 and source position are copied. 
 
-The value of the new "\_prevVars" is a little more complicated to work out.
-Any key, value pairs in the current "\_curVars" are stored plus any key, value pairs in the current "\_prevVars" in which the key isn't present in the current 
-set of "\_curVars" keys. This is because
-the identifiers in "\_curVars" scope are visible over the identifiers with
-the same name in "\_prevScope". Haskell's union operation on maps
+The value of the new \texttt{\_prevVars} is a little more complicated to work out.
+Any key, value pairs in the current \texttt{\_curVars} are stored plus any key, value pairs in the 
+current \texttt{\_prevVars} in which the key isn't present in the current 
+set of \texttt{\_curVars} keys. This is because
+the identifiers in \texttt{\_curVars} scope are visible over the identifiers with
+the same name in \texttt{\_prevScope}. Haskell's union operation on maps
 discards the key, value pairs in the second map for keys that are
 present in the first map, so this is trivial to implement.
 
@@ -310,8 +311,8 @@ seq (
 )
 \end{lstlisting}
 
-The value of "x" is able to be calculated to be 20, so whenever
-"x" is used in the scope it can simply be replaced with the literal "20".
+The value of \texttt{x} is able to be calculated to be 20, so whenever
+\texttt{x} is used in the scope it can simply be replaced with the literal \texttt{20}.
 
 However, some variables will not be able to be fully evaluated at compile time.
 So results will have to be written to GPIR registers.
@@ -332,7 +333,7 @@ seq (
 )
 \end{lstlisting}
 
-The value of x can't be known at compile time so it is written into register 1,
+The value of \texttt{x} can't be known at compile time so it is written into register \texttt{1},
 and then read from the same register when it is needed.
 
 During interpreting, there needs to be no conflict between registers (e.g. if a value
@@ -341,7 +342,7 @@ until that value is out of scope). There's no hard limit on registers so a simpl
 method of just incrementing the register count every time a value needs to be stored
 is implemented, although this may possibly cause a lot of unecessary memory usage.
 
-"\_varRegTable" is used to store the mappings of variable names to register numbers. 
+\texttt{\_varRegTable} is used to store the mappings of variable names to register numbers. 
 Conflicts between variables with the same name in different scopes is not a problem,
 as the register table in the inner block is thrown away once the scope is left.
 
@@ -384,12 +385,12 @@ seq {
 \end{lstlisting}
 \end{minipage}
  
-Sequential statements need to be "quoted", which is why the record contains
-the "\_seqBlock" flag, so the interpreter can generate the correct GPIR code.
+Sequential statements need to be quoted, which is why the record contains
+the \texttt{\_seqBlock} flag, so the interpreter can generate the correct GPIR code.
 
 \subsection{Thread Mapping}
 Each task in the GPRM must be mapped to a thread. There is a function
-in the Interpreter called "getThread" which calculates what the next thread 
+in the Interpreter called \texttt{getThread} which calculates what the next thread 
 number should be to map the task to based on the current block state.
 
 Currently this function uses a simple incremental scheme and rolls around
@@ -464,9 +465,9 @@ fun(5 * 4);
 
 \end{lstlisting}
 
-In this example when evaluating the functional call with the argument (5 * 4),
-every "a" which is the same instance as the one in the function arguments
-is replaced by the expression (5 * 4). The nested "a" is not the same
+In this example when evaluating the functional call with the argument \texttt{(5 * 4)},
+every \texttt{a} which is the same instance as the one in the function arguments
+is replaced by the expression \texttt{(5 * 4)}. The nested \texttt{a} is not the same
 instance and is not substituted.
 
 
@@ -501,6 +502,8 @@ for (int i = 0; i < -1; i++) {
 
 
 \subsection{Partial Expression Evaluation}
+\label{sub:partial}
+
 When evaluating an expression there are two major parts:
 
 \begin{itemize}
@@ -553,7 +556,13 @@ are discussed in Chapter ~\ref{ch:future}.
 
 \section{GPIR Code Generation}
 
+Once the interpreter is completed it should produce the GPIR AST, 
+from this AST the goal is to output GPIR source code.
+Since the GPIR language is very simple this task is not too difficult.,
+It involves recursively travelling the tree, ensuring lists containing task operations
+are surrounded by parenthesis, printing quotes when needed, etc.
 
-
-
-
+For this task a "pretty printer" library is used which allows for formatting
+the output much easier than manipulating strings. The generated GPIR source code
+is saved into a file with the same prefix as the source but with a ".td" (Task Description)
+extension.

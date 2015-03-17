@@ -29,24 +29,25 @@ Given the following GPC code:
 
 \lstinputlisting[style=myGPC]{code_samples/binaryOp.gpc}
 
+The expression within the \texttt{test.m2} method is read in as a binary expression
+tree which can be represented by the following:
 
 \begin{center}
 \includegraphics[scale=0.5]{graphs/evalTree.pdf}
 \end{center}
 
-
 The tree above once evaluated transforms into the following tree: 
 
 \begin{center}
-\includegraphics[scale=0.5]{graphs/fullyEvalTree.pdf}
+\includegraphics[scale=0.5]{graphs/futureTree.pdf}
 \end{center}
 
 We can see this reduction in the generated GPIR code:
 
 \lstinputlisting[style=myGPIR]{code_samples/binaryOp.td}
 
-The downsides of this method is that once
-a value that can't be worked out at compile time is met, it is not possible
+This shows the limitations of the expression evaluation explained in section ~\ref{sub:partial}.
+Once a value that can't be worked out at compile time is met, it is not possible
 to evaluate expressions any value further up the tree. In the given example
 it is clear that it is possible to evaluate the expression further.
 

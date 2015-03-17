@@ -16,6 +16,13 @@ To create a task kernel, the C++ class needs to be in the \textit{GPRM::Kernel::
 Communication code is represented as a task manager. A task manager "co-ordinates" communication between one or more task kernels, and
 is represented as a function which can be called from a C++ program.\cite{GPRM}
 
+
+When building, the GPRM packages the Task Kernels with 
+GPRM generic code into a library. During this process the compiler analyses all classes and methods in the
+Task Kernels and maps them to numeric constants. This process allows GPIR code to call Task Kernels.
+GPIR code is also compiled down to GPRM bytecode packaged into the library. A serial C++ program when compiled is then linked to
+this library and a call to the GPRM's "run" method executes the GPRM bytecode. 
+
 \newpage
 
 \begin{figure}[ht]
@@ -60,6 +67,20 @@ they would get evaluated in parallel instead of being deffered to be evaluated b
 
 Also literal values don't need to be evaluated, they should be deferred and passed to tasks which is
 the reason the numbers are quoted in these examples.
+
+\subsubsection{Registers}
+
+The GPRM has registers which can be written to or read from.
+
+\begin{lstlisting}[style=myGPIR]
+(seq
+    '(reg.write[0] '1 obj.m1[0])
+    '(obj.m2[0] (reg.read[0] '1))
+)
+\end{lstlisting}
+
+This program writes the result of the obj.m1 call to register 1,
+then reads the result from register 1 and passed it into the obj.m2 call.
 
 The GPIR language has other keywords and features but these are the ones that are important for
 understanding the examples and design choices made for this project.
