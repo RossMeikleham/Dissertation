@@ -446,9 +446,31 @@ any further statements in the current block. This allows for propogation of a "r
 up the block states until the current function is exited.
 
 
-\subsection{Inlining Functions}
-When encountering a function call, the function needs to be inlined.
-To do this every expression passed to the function
+\subsection{Interpreting Functions}
+When a function is called, each argument identifier in scope
+is replaced by the the expression which was supplied to the function.
+Then each statement in the function is evaluated.
+
+\begin{lstlisting}[style=myGPC]
+
+void fun(int a) {
+    obj.m1(a);
+    seq {
+        int a = 10;
+        obj.m3(a);
+    }    
+}
+
+fun(5 * 4);
+
+\end{lstlisting}
+
+In this example when evaluating the functional call with the argument (5 * 4),
+every "a" which is the same instance as the one in the function arguments
+is replaced by the expression (5 * 4). The nested "a" is not the same
+instance and is not substituted.
+
+
 
 \subsection{For Loop Evaluation}
 

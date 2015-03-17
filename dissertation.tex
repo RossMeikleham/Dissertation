@@ -9,10 +9,14 @@
 
 \begin{document}
 
+
 %Set the Font/Coloring for the GPC language,
 %Use the C++ default with added seq and par keywords
+\makeatletter
 \lstdefinestyle{myGPC} {language=C++,
-                basicstyle=\ttfamily,
+                basicstyle=%
+                \ttfamily
+                \lst@ifdisplaystyle\scriptsize\fi,
                 keywordstyle=\color{blue}\ttfamily,
                 stringstyle=\color{red}\ttfamily,
                 commentstyle=\color{gray}\ttfamily,
@@ -22,10 +26,15 @@
                 numbers=left,
                 morekeywords={seq}
 }
+\makeatother
 
 
+
+\makeatletter
 \lstdefinestyle{myGPIR} {language=Lisp,
-                basicstyle=\ttfamily,
+                basicstyle=%
+                \ttfamily
+                \lst@ifdisplaystyle\scriptsize\fi,
                 keywordstyle=\color{blue}\ttfamily,
                 stringstyle=\color{red}\ttfamily,
                 commentstyle=\color{gray}\ttfamily,
@@ -35,9 +44,14 @@
                 numbers=left,
                 morekeywords={seq}
 }
+\makeatother
 
+
+\makeatletter
 \lstdefinestyle{myHaskell} {language=Haskell,
-                basicstyle=\ttfamily,
+                basicstyle=%
+                \ttfamily
+                \lst@ifdisplaystyle\scriptsize\fi,
                 keywordstyle=\color{blue}\ttfamily,
                 stringstyle=\color{red}\ttfamily,
                 commentstyle=\color{gray}\ttfamily,
@@ -47,9 +61,14 @@
                 numbers=left,
                 morekeywords={seq}
 }
+\makeatother
 
+
+\makeatletter
 \lstdefinestyle{myJava} {language=Java,
-                basicstyle=\ttfamily,
+                basicstyle=%
+                \ttfamily
+                \lst@ifdisplaystyle\scriptsize\fi,
                 keywordstyle=\color{blue}\ttfamily,
                 stringstyle=\color{red}\ttfamily,
                 commentstyle=\color{gray}\ttfamily,
@@ -59,6 +78,8 @@
                 numbers=left,
                 morekeywords={seq}
 }
+\makeatother
+
 
 \title{Design and Compilation of a C-like front-end language for GPRM}
 \author{Ross Meikleham}
