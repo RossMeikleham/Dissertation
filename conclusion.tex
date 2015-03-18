@@ -2,7 +2,7 @@
 
 \section{Benchmarks}
 
-A MergeSort algorithm has been implemented in GPC for 80 million integers with a cutoff value 
+A merge sort algorithm has been implemented in GPC for 80 million integers with a cutoff value 
 of 2048. The actual sorting and merging is performed by the \texttt{MergeSort} kernel class
 methods \texttt{MergeSort.serial\_ms} and \texttt{MergeSort.merge\_two}. The GPC code structures
 how the Kernel tasks should interact and calls them in parallel.\\ 
@@ -18,11 +18,11 @@ to map tasks onto.
 \begin{figure}[!htb]
 \pdfimageresolution=110
 \includegraphics{graphs/benchmark.png}
-\caption{Mergesort Benchmarks for parallel frameworks \cite{GPRMBench}}
+\caption{Merge sort benchmarks for parallel frameworks \cite{GPRMBench}}
 \label{fig:bench}
 \end{figure}
 
-The compiler compiles the MergeSort GPC code into GPIR code identical to the GPIR code used to generate figure ~\ref{fig:bench}.
+The compiler compiles the merge sort GPC code into GPIR code identical to the GPIR code used to generate figure ~\ref{fig:bench}.
 The \texttt{MergeSort} C++ Kernel class is also the same one used. From the figure it can easily be seen that the GPRM
 far outperforms Cilk, TBB, and OpenMP on the XeonPhi, and OpenMp on the TILEPro64 for 240 threads in this specific example. 
 
@@ -49,7 +49,7 @@ which can be further compiled to be run on the GPRM.
 Methods and techniques that can be applied to interpret and partially evaluate purely
 functional code have also been explored.
 
-This project also leaves a lot of oppertunities for future work. Compilers and Programming Languages in general have
+This project also leaves a lot of opportunities for future work. Compilers and Programming Languages in general have
 multiple areas where there are constantly improvements to be made, most notably in language features and optimisations 
 for code generation. A couple of possible improvements are explored in Chapter ~\ref{ch:future}.
 

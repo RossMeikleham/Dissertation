@@ -25,11 +25,12 @@
                 keywordstyle=\color{blue}\ttfamily,
                 stringstyle=\color{red}\ttfamily,
                 commentstyle=\color{gray}\ttfamily,
-                morecomment=[l][\color{magenta}]{\#}
-                directivestyle={\color{green}}
+                morecomment=[l][\color{magenta}]{\#},
+                directivestyle={\color{green}},
                 identifierstyle=\color{purple},
                 numbers=left,
-                morekeywords={seq}
+                showstringspaces=false,
+                morekeywords={seq, par, begin}
 }
 \makeatother
 
@@ -41,13 +42,14 @@
                 \ttfamily
                 \lst@ifdisplaystyle\scriptsize\fi,
                 keywordstyle=\color{blue}\ttfamily,
-                stringstyle=\color{red}\ttfamily,
                 commentstyle=\color{gray}\ttfamily,
-                morecomment=[l][\color{magenta}]{\#}
-                directivestyle={\color{green}}
+                morecomment=[l][\color{magenta}]{\#},
+                directivestyle={\color{green}},
                 identifierstyle=\color{purple},
                 numbers=left,
-                morekeywords={seq}
+                showstringspaces=false,
+                morekeywords={seq, par, begin},
+                deletekeywords={write, read}
 }
 \makeatother
 
@@ -150,7 +152,7 @@
 %   BIBLIOGRAPHY   %
 %%%%%%%%%%%%%%%%%%%%
 
-\bibliographystyle{plain}
+\bibliographystyle{ieeetr}
 \bibliography{bib}
 
 \end{document}

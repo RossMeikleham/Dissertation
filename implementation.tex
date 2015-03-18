@@ -3,7 +3,7 @@
 
 \section{Implementation Language Choice}
 
-The compiler will be implemented using the Haskell programming language.
+The compiler is implemented in the Haskell programming language.
 
 During complication the need to traverse trees usually occurs quite
 often. Functional languages like Haskell are suited to this task 
@@ -14,7 +14,7 @@ The Glasgow Haskell Compiler is available for most platforms, most importantly f
 on x86 architectures. This allows the compiler to be portable across these platforms provided the libraries 
 used to build the compiler are portable.
 
-Haskell has support for algebraic datatypes, these makes Abstract Syntax Trees
+Haskell has support for algebraic data types, these makes Abstract Syntax Trees
 simpler to implement. For example the AST for a very simple expression
 can be represented as follows:
 
@@ -62,17 +62,17 @@ class Const extends Expression {
 The Haskell version is much clearer on the structure of the tree, and takes much
 less code to implement. 
 
-It is also to easily extend Haskell datatypes to include
+It is also to easily extend Haskell data types to include
 custom annotations. For example storing the source code position for parts of expressions 
 which is useful for reporting errors to the user.
 
-Due to the pure function nature of Haskell, parts of complilation can easily be performed in parallel.
+Due to the pure function nature of Haskell, parts of compilation can easily be performed in parallel.
 For example during type checking each GPC function can be type checked in parallel and this can even be subdivided 
-further into blocks within functions. For this project speed of compilation is not a major concern, but in the future if compliation ever
+further into blocks within functions. For this project speed of compilation is not a major concern, but in the future if compilation ever
 needs to be faster then this option is always available.
 
 Haskell also has powerful libraries for parsing source code such as Parsec which is a parser combinator
-library. Parsec allows Combinator parsers to be written in the Haskell language itself avoiding the complexity
+library. Parsec allows combinator parsers to be written in the Haskell language itself avoiding the complexity
 of integration of different tools and languages\cite{parsec}. 
 
 \section{Tools and Testing}
@@ -83,21 +83,21 @@ of integration of different tools and languages\cite{parsec}.
 Cabal (Common Architecture for Building Applications and Libraries) is a system for building and
 packaging Haskell libraries and programs\cite{cabal}. This system can manage the
 project library dependencies, and automatically download and install missing dependencies.
-It can also build amd install the compiler on the system, and run unit tests.
+It can also build and install the compiler on the system, and run unit tests.
 
 \subsection{Testing}
 
-For Unit testing the HUnit library will be used, this can be integrated
+For Unit testing the HUnit\cite{hunit} library will be used, this can be integrated
 with Cabal to easily run all the required unit tests.
 
 One form of testing used for this project is testing each individual component
-(e.g. The Parser or the TypeChecker). Each component in the compiler can easily
-be uncoupled from one another due to the linear nature of compliation.
+(e.g. The Parser or the Type Checker). Each component in the compiler can easily
+be uncoupled from one another due to the linear nature of compilation.
 
 Another form of testing is writing GPC source files which should compile, and
 GPC files which should fail compilation at a certain stage. The compiler
 is then invoked during testing on all of these files to check whether
-all the source files which should compile do infact compile with no errors,
+all the source files which should compile do in fact compile with no errors,
 and all the source files which should raise an error do not compile.
 
 An upside to this method is that testing this way is flexible in that
@@ -112,7 +112,7 @@ component is done alongside this method.
 
 \subsection{Code Coverage}
 
-The Haskell HPC (Haskell Program Coverage) library allows for recording
+The Haskell HPC\cite{hpc} (Haskell Program Coverage) library allows for recording
 code coverage over different modules during testing. This can be integrated with
 cabal unit testing to automatically generate these results. The usefulness of this
 allows for checking which sections of code still need to be tested and assists
@@ -121,7 +121,7 @@ in writing further unit tests.
 
 \section{Compiler Structure}
 Compilation is split up into multiple stages or "passes",
-it is possible to compile in one pass but seperating each 
+it is possible to compile in one pass but separating each 
 specific section of compilation allows modularity and decoupling.
 
 \begin{figure}[!htb]
@@ -160,7 +160,7 @@ prevent "logic" errors at compile time (e.g. adding 2 bool values together). Sco
 is also important as identifiers being used within the program need to be binded to an expression of
 some sort, and the "single assignment" rule in the GPC language needs to be enforced.
 
-There are two seperate "types" of scope in a GPC program. The first is the top level scope and the
+There are two separate "types" of scope in a GPC program. The first is the top level scope and the
 other is at function level scope. Any scope "further" down from function level scope is itself
 a function level scope. During this stage the top level scope will be type and scope checked.
 Afterwards each individual function will be type and scope checked.
@@ -185,10 +185,10 @@ Once all top level statements have been checked, all functions in scope stored,
 all top level variables stored, and all variables stored. Each individual function
 can be checked.
 
-A slightly different stucture is needed to type check functions.
+A slightly different structure is needed to type check functions.
 
 At anytime it is needed to be known what variables that are currently in scope, their types,
-what functions are avilable to call, their argument types, and return types. Also the
+what functions are available to call, their argument types, and return types. Also the
 objects which are available to call methods on, and the current function the type checker
 is in at any point.
 
@@ -292,7 +292,7 @@ data CodeGen = CodeGen {
 
 
 \subsection{Registers}
-Values which can be fully evaluated at compile time can be subsituted into the
+Values which can be fully evaluated at compile time can be substituted into the
 GPIR code with their literal value when they are used.
 
 For example:
@@ -351,7 +351,7 @@ During interpreting, there needs to be no conflict between registers (e.g. if a 
 is stored in register 1 that will need to be used later, register 1 cannot be written to
 until that value is out of scope). There's no hard limit on registers so a simple
 method of just incrementing the register count every time a value needs to be stored
-is implemented, although this may possibly cause a lot of unecessary memory usage.
+is implemented, although this may possibly cause a lot of unnecessary memory usage.
 
 \texttt{\_varRegTable} is used to store the mappings of variable names to register numbers. 
 Conflicts between variables with the same name in different scopes is not a problem,
@@ -453,7 +453,7 @@ of the current block is at the top of a function, then the "\_isReturning" flag
 is then set for the current block.
  
 When the "\_isReturning" flag is set for a block, the evaluator will not evaluate
-any further statements in the current block. This allows for propogation of a "return"
+any further statements in the current block. This allows for propagation of a "return"
 up the block states until the current function is exited.
 
 
@@ -504,7 +504,7 @@ of the loop variable. This unrolls the loop.
 It is also possible to detect cases of infinite loops based on the loop variable, 
 the conditional, and afterthought statements, before attempting to unroll the loop.
 
-For example the following for loop will loop infinitely (Ignorning overflow of integers, which is undefined in most C/C++ standards).
+For example the following for loop will loop infinitely (ignoring overflow of integers, which is undefined in most C/C++ standards).
 \begin{lstlisting}[style=myGPC]
 for (int i = 0; i < -1; i++) {
     obj.m1(i);
@@ -545,7 +545,7 @@ compiler is represented by the following tree:
 
 
 The tree is evaluated through
-postorder traversal. Once two leaf nodes are found the binary operation in the parent node
+post-order traversal. Once two leaf nodes are found the binary operation in the parent node
 is attempted to be applied to the two leaf nodes, or if one leaf node is found
 with no other node the unary operation in the parent node is applied
 to the leaf.  
