@@ -4,7 +4,7 @@ Cilk Plus is a general purpose programming language based on C++. It extends the
 parallel for loops and spawning functions in parallel using a "fork-join" model to achieve task-parallelism.
 
 One of the main princeples of the Cilk language is that abstraction is important and that the programmer should use provided constructs to expose 
-the parallelism in their application, allowing the programmer to be free to focus on what the code is allowed to execute in parallel and not worry about the underlying details of manually managing threads. The runtime should then have the responsibility of scheduling the threads, and dividing work between
+the parallelism in their application. This allows the programmer to be free to focus on what the code is allowed to execute in parallel and not worry about the underlying details of manually managing threads. The runtime should then have the responsibility of scheduling the threads and dividing work between
 processors.\cite{cilkfaq}. 
 
 Cilk Plus introduces 3 new keywords ontop of the C++ language\cite{cilk}: 

@@ -6,17 +6,17 @@
 The compiler will be implemented using the Haskell programming language.
 
 During complication the need to traverse trees usually occurs quite
-often. Functional languages like Haskellare suited to this task 
+often. Functional languages like Haskell are suited to this task 
 due to features such as pattern matching and tail-end recursive optimisation 
-which make traversing trees efficient and simple to implement/ 
+which make traversing trees efficient and simple to implement.
 
 The Glasgow Haskell Compiler is available for most platforms, most importantly for Windows, OSX and Linux 
 on x86 architectures. This allows the compiler to be portable across these platforms provided the libraries 
 used to build the compiler are portable.
 
-Haskell has algebaric datatypes, these makes Abstract Syntax Trees
+Haskell has support for algebraic datatypes, these makes Abstract Syntax Trees
 simpler to implement. For example the AST for a very simple expression
-can be representedas follows:
+can be represented as follows:
 
 \begin{lstlisting}[style=myHaskell]
 
@@ -63,11 +63,11 @@ The Haskell version is much clearer on the structure of the tree, and takes much
 less code to implement. 
 
 It is also to easily extend Haskell datatypes to include
-custom annotations. For example storing the source code position for parts of expressions may
-be useful for reporting errors to the user.
+custom annotations. For example storing the source code position for parts of expressions 
+which is useful for reporting errors to the user.
 
 Due to the pure function nature of Haskell, parts of complilation can easily be performed in parallel.
-For example during type checking, each GPC function can be type checked in parallel and this can even be subdivided 
+For example during type checking each GPC function can be type checked in parallel and this can even be subdivided 
 further into blocks within functions. For this project speed of compilation is not a major concern, but in the future if compliation ever
 needs to be faster then this option is always available.
 
@@ -81,7 +81,7 @@ of integration of different tools and languages\cite{parsec}.
 \subsection{Cabal}
 
 Cabal (Common Architecture for Building Applications and Libraries) is a system for building and
-packaging Haskell libraries and programs.\cite{cabal}. This system can manage the
+packaging Haskell libraries and programs\cite{cabal}. This system can manage the
 project library dependencies, and automatically download and install missing dependencies.
 It can also build amd install the compiler on the system, and run unit tests.
 
@@ -101,12 +101,12 @@ all the source files which should compile do infact compile with no errors,
 and all the source files which should raise an error do not compile.
 
 An upside to this method is that testing this way is flexible in that
-they aren't coupled with the implementation internals of the compiler.
+tests aren't coupled with the implementation internals of the compiler.
 The only way that these test would need to be changed was if the design
 of the language itself would need to be changed.
 
-The downsides to this method is that without manually checking the errors raised
-by the tests that should fail the source may generate an error which is unrelated
+A downside to this method is that without manually checking the errors raised
+by the tests that should fail; The source may generate an error which is unrelated
 to the error that is being tested. This is why some testing of each internal
 component is done alongside this method.
 
@@ -222,12 +222,12 @@ is copied if entering a block, otherwise if entering a function the function nam
 and source position are copied. 
 
 The value of the new \texttt{\_prevVars} is a little more complicated to work out.
-Any key, value pairs in the current \texttt{\_curVars} are stored plus any key, value pairs in the 
+Any key-value pairs in the current \texttt{\_curVars} are stored plus any key-value pairs in the 
 current \texttt{\_prevVars} in which the key isn't present in the current 
 set of \texttt{\_curVars} keys. This is because
 the identifiers in \texttt{\_curVars} scope are visible over the identifiers with
 the same name in \texttt{\_prevScope}. Haskell's union operation on maps
-discards the key, value pairs in the second map for keys that are
+discards the key-value pairs in the second map for keys that are
 present in the first map, so this is trivial to implement.
 
 When type checking a function, every statement in the function is type checked
@@ -238,9 +238,10 @@ against actual types.
 
 Objects which are declared are not checked to see if they actually exist. Neither
 are method calls which means the argument types and return types when calling them
-cannot be determined at compile time. This is due to the fact Objects are written
-in C++, and the C++ class would need to be checked for methods and types. This is already
-implemented in the GPRM, so an error will occur further down to compile "chain" or during
+cannot be determined at compile time. This is due to the fact Objects are instantiated from
+C++ classes. The C++ class of the object would need to be checked for 
+methods available as well as argument and return types. 
+This is already implemented in the GPRM, so an error will occur further down to compile "chain" or during
 runtime.
 
 If a type or scope error is encountered, an error message determining the type of error,
@@ -255,7 +256,7 @@ The goal of this stage is to run through the execution path the GPIR code
 will take from the entry function, and partially evaluate the code as much
 as possible while generating the GPIR AST.
 
-Just before Evaluation the AST is transformed slightly into a similar AST
+Just before interpreting the GPC AST is transformed slightly into a similar AST
 with a couple of differences. One is that annotations are not present (since source position information
 is not needed anymore), and type information is stripped (since the program has been proven to 
 not have any type errors), also objects in the top level scope are stripped. (Since scope checking
@@ -263,7 +264,7 @@ proved that all methods are called on objects that exist, and whenever a method 
 name of the object is part of the call).
 
 Initially the values of all top level assignment statements need to be stored
-as constants before executing, as well as every function.
+as constants before executing, as well as the details for every function.
 
 While interpreting a state is needed to determine actions taken
 during certain sections, as well as to evaluate expressions.
@@ -296,6 +297,9 @@ GPIR code with their literal value when they are used.
 
 For example:
 
+\begin{center}{\textbf{GPC Code}}
+\end{center}
+
 \begin{lstlisting}[style=myGPC, frame=single]
 seq {
     int x = 4 * 5;
@@ -303,6 +307,9 @@ seq {
     obj.m2(x + 3);
 }
 \end{lstlisting}
+
+\begin{center}{\textbf{Compiled down to GPIR code}}
+\end{center}
 
 \begin{lstlisting}[style=myGPIR, frame=single]
 seq (
@@ -319,6 +326,8 @@ So results will have to be written to GPIR registers.
 
 For example:
 
+\begin{center}{\textbf{GPC Code}}
+\end{center}
 \begin{lstlisting}[style=myGPC, frame=single]
 seq {
     int x = obj.m1();
@@ -326,6 +335,8 @@ seq {
 }
 \end{lstlisting}
 
+\begin{center}{\textbf{Compiled down to GPIR Code}}
+\end{center}
 \begin{lstlisting}[style=myGPIR, frame=single]
 seq (
      '(register.write[0] '1 'obj.m1[0]) 
@@ -504,7 +515,7 @@ for (int i = 0; i < -1; i++) {
 \subsection{Partial Expression Evaluation}
 \label{sub:partial}
 
-When evaluating an expression there are two major parts:
+There are two parts needed to evaluate an expression:
 
 \begin{itemize}
     \item Replacement - All identifiers in the expression which have a value in the constant table are
@@ -516,7 +527,7 @@ When evaluating an expression there are two major parts:
 
 Replacement is trivial, using the constant table for the current scope the
 expression AST is recursively travelled and any instances of identifiers
-in the constant table are replaced
+in the constant table are replaced.
 
 
 Reduction is a bit more complex, it involves attempting to apply the binary
@@ -549,10 +560,13 @@ In the case of a unary operation if the leaf node is a value which can be calcul
 at compile time the expression is evaluated, otherwise the expression is not evaluated
 and the tree doesn't change.
 
-This method isn't optimal as there are expressions which are possible to
-reduce further than this method can achieve in the case when some sub-expressions
-cannot be evaluated at compile time. This problem and a possible solution
-are discussed in Chapter ~\ref{ch:future}.
+However this method isn't optimal when some sub-expressions cannot be
+evaluated at compile time. In this case the expression can only be partly evaluated,
+but depending on the expression this method can at times reduce the expression
+down to an expression which can still be further reduced.
+This problem and a possible solution is discussed in Chapter ~\ref{ch:future}.
+
+
 
 \section{GPIR Code Generation}
 

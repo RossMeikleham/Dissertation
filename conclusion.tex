@@ -2,9 +2,9 @@
 
 \section{Benchmarks}
 
-The MergeSort algorithm has been implemented in GPC for 80 million integers with a cutoff value 
+A MergeSort algorithm has been implemented in GPC for 80 million integers with a cutoff value 
 of 2048. The actual sorting and merging is performed by the \texttt{MergeSort} kernel class
-method \texttt{MergeSort.serial\_ms} and \texttt{MergeSort.merge\_two}. The GPC code structures
+methods \texttt{MergeSort.serial\_ms} and \texttt{MergeSort.merge\_two}. The GPC code structures
 how the Kernel tasks should interact and calls them in parallel.\\ 
 
 \lstinputlisting[style=myGPC]{code_samples/GPRM_MergeSort.gpc}
@@ -23,7 +23,21 @@ to map tasks onto.
 \end{figure}
 
 The compiler compiles the MergeSort GPC code into GPIR code identical to the GPIR code used to generate figure ~\ref{fig:bench}.
-The \texttt{MergeSort} C++ Kernel class is also the same one used.
+The \texttt{MergeSort} C++ Kernel class is also the same one used. From the figure it can easily be seen that the GPRM
+far outperforms Cilk, TBB, and OpenMP on the XeonPhi, and OpenMp on the TILEPro64 for 240 threads in this specific example. 
+
+Another thing to note is that the GPC code is a lot "nicer" than the code for the Cilk, TBB, and OpenMP
+implementations, as it is almost completely pure C++.  It doesn't require the learning of how to use pragmas, 
+or fork-join mechanisms.
+
+\begin{figure}[!htb]
+\pdfimageresolution=110
+\includegraphics{graphs/mergebad.png}
+\caption{Mergesort implementations in TBB, OpenMP, and CilkPlus \cite{GPRMBench}}
+\label{fig:bench}
+\end{figure}
+
+
 
 \section{Summary}
 The main goal of the project was to create a C-like language for the GPRM.

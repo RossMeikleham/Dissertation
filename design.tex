@@ -77,7 +77,7 @@ to map these to seperate threads.
 
 
 However if the language is Turing-complete deciding the execution path
-of a given program is essentially the Halting Problem. It has been proven that the solution to this problem is undecidable\cite{halting} 
+of a given program is essentially the Halting Problem. It has been proven that the solution to this problem is undecidable\cite{halting}. 
 
 To avoid this problem, the language needs to be restricted to a point where it can still be useful and the execution
 path decided at compile time.
@@ -86,12 +86,13 @@ If the language is purely functional with no side effects then this avoids the p
 with no side effects is useless. There is one major feature that must ne in the language that invokes
 side effects which is method calls for kernel objects. 
 
-Enforcing that anything returned from a kernel object method call's type then has to be in the 
-\texttt{GPRM::Kernel} namespace, and anything passed into a kernel object method call must be in the GPRM::Kernel
+
+To achieve this the type system can enforce that anything returned from a kernel object method call's type then has to be in the 
+\texttt{GPRM::Kernel} namespace, and anything passed into a kernel object method call is "cast"into the \texttt{GPRM::Kernel}
 namespace. This allows passing impure values between kernel methods but restricts them being used
 for conditional statements. Essentially we still have side effects but they're restricted to
 only being in Kernel space and not in the GPRM. The execution of GPC code is then purely functional
-and the execution path of code can be determined at compile time without oo much difficulty.
+and the execution path of code can be determined at compile time without too much difficulty.
 
 \section{GPC Language Features}
 
@@ -107,7 +108,7 @@ and the execution path of code can be determined at compile time without oo much
         These are placed before a block
         of statements to determine whether each individual statement within the block are
         to be evaluated in sequential or parallel. By default a block of statements are evaluated
-        in parallel, but the par keyword makes it more explicit especially if there's lots of nested
+        in parallel, but the par keyword makes it more explicit for readability in the case of lots of nested
         seq/par blocks.
 
 \subsection{Objects}
@@ -129,12 +130,13 @@ test.m1();
 Making the language completely compatible with C++ in that all GPC code can be
 compiled with a C++11 compatible compiler allows programers that are familiar to
 C++ write GPC code with little difficulty. As long as they are aware of the restrictions
-that GPC has compared to C++. However the new keywords \texttt{seq} and \texttt{par} are not in the language.
+that GPC has compared to C++. However the new keywords \texttt{seq} and \texttt{par} are not 
+in the C++11 language.
 
 Currently preprocessor directives aren't supported in GPC so the compiler can
-just ignore lines starting with \texttt{"\#"}, and define \texttt{seq} and \texttt{par} as no-ops. 
+just ignore lines starting with \texttt{\#}, and define \texttt{seq} and \texttt{par} as no-ops. 
 For example this snippet of code compiles with both the GPC compiler and 
-C++ compilers:
+should compile with all C++11 compilers:
 
 \begin{lstlisting}[style=myGPC]
 #include "GPRM/Kernel/Test.h"
@@ -172,8 +174,8 @@ to run it in parallel on the GPRM.
 \subsection{Types}
         C++ types such as string, char, bool, int, and double are included.
         Pointers, and "multilevel" pointer types are included (e.g. int**, char*).
-        However pointers are restricted in that you cannot take
-        an address of any variable, adding and subtracting integers
+        However pointers are restricted in that the address of a variable
+        cannot be taken. Adding and subtracting integers
         from pointers is allowed. Usually pointers are passed into
         the GPRM from the C++ caller to represent an Array.
 
@@ -223,7 +225,7 @@ seq {
 \end{lstlisting}
 
 If statements must take a "pure" boolean type as its conditional.
-x == 10 is a GPRM::Kernel::bool type, so this raises a type error.
+\texttt{x == 10} is a \texttt{GPRM::Kernel::bool} type, so this raises a type error.
   
 \subsection{Operations}
         Most basic binary arithmetic operations are included i.e. 
@@ -241,7 +243,8 @@ x == 10 is a GPRM::Kernel::bool type, so this raises a type error.
 
 
 \subsection{Single assignment}
-Variables in GPC can only be assigned once per scope.
+Variables in GPC can only be assigned once per scope to keep
+the language functional.
 
 for example the following isn't allowed:
 
@@ -294,8 +297,8 @@ at compile time whether or not the loop is infinite.
 It's worth noting that these restrictions are similar to the restrictions on the \textit{cilk\_for} loop.
 The \textit{cilk\_for} loop must declare a single initial loop variable, the conditional expression must 
 compare the loop variable with a constant "termination expression", and the "afterthought" must either increment
-or decrement the loop variable by some amount.
-\cite{cilkfor}
+or decrement the loop variable by some amount
+\cite{cilkfor}.
 
 An example of a for loop is as follows:
 

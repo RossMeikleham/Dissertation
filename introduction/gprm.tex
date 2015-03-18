@@ -49,11 +49,12 @@ the task should run on. For example a simple GPIR program which adds numbers in 
 
 The two nested additions are performed in parallel, with the first being mapped onto thread 0,
 and the second being mapped onto thread 1. When they've both been evaluated, then the outer addition
-with add the results on thread 0.
+will add the results on thread 0.
 
 \subsubsection{Quoting}
 
-Like in Scheme and Lisp, quoting deffers the evaluation. This is useful for performing sequential evaluation.
+Like in Scheme and Lisp, quoting an expression deffers the evaluation of it. 
+This is useful for performing sequential evaluation.
 
 \begin{lstlisting}[style=myGPC]
 (seq 

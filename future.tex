@@ -2,10 +2,45 @@
 \label{ch:future}
 
 \section{Configuration file generation}
-    yml config generation.
-    These files are needed by the GPRM to determine aliases in GPIR code, libraries used,
-    number of threads/nodes. There is enough information at compilation time to generate these,
-    and they are currently generated manually. 
+
+The GPRM framework uses YAML configuration files when compiling the GPIR code.
+An example file for the MergeSort implementation is as follows:
+
+\begin{lstlisting}[language=yaml]
+
+# Core Services Configuration
+System:
+  Version: 3.0
+  Libraries: [MergeSort, CoreServices]
+  NServiceNodes: 241 # excluding gateway; this is actually the number of threads
+  ServiceNodes:
+    ctrl: [ 1, [CoreServices.SEQ ] ]
+    control: [ 1, [CoreServices.BEGIN] ]
+    a: [ 2, [CoreServices.ALU] ]
+    reg: [ 2, [CoreServices.REG ] ]
+    MS: [2, [MergeSort.MergeSort] ]
+
+  Aliases:
+  # Alias Name (case sensitive): FQN
+    begin: control.CoreServices.BEGIN.begin
+    par: ctrl.CoreServices.BEGIN.begin
+    seq: ctrl.CoreServices.SEQ.seq
+    'reg.write': reg.CoreServices.REG.write
+    'reg.read': reg.CoreServices.REG.read
+    'reg.inc': reg.CoreServices.REG.inc
+    'MS.array': MS.MergeSort.MergeSort.array
+    'MS.serial_ms': MS.MergeSort.MergeSort.serial_ms
+    'MS.merge_two': MS.MergeSort.MergeSort.merge_two
+# These used to be "ALU_names"  
+    '+': a.CoreServices.ALU.plus
+    '*': a.CoreServices.ALU.times
+\end{lstlisting}
+
+The YAML file defines what libraries and services are required to be compiled,
+number of threads, and aliases for functions in the GPIR code.
+
+It is entirely possible to generate this information from the GPC compiler rather
+than manually having to create these files.
 
 
 \section{Language Features}
