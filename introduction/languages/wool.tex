@@ -1,2 +1,16 @@
 \section{Wool}
-Wool\cite{wool} is a library which is inspired by Cilk that supports task parallel programming by introducing three forms of synchronization. (Create, Exit, and Join). It relies on tasks having low overheads. The 
+Wool\cite{wool} is a library written for C that supports task parallel programming. It is inspired by Cilk and introduces
+three forms of synchronization (Create, Exit, and Join). Instead of being a language extension like Cilk, macros and
+inline functions are used for low overhead in task operations. 
+
+Wool relies on tasks having low overheads, and focuses on having low overhead of task creation for fine grained task parallelism. 
+Tasks can only synchronize when a task is created or completes execution. To reduce overhead, if every thread
+in the system is busy, further tasks are executed sequentially as procedure calls which saves overhead in having
+to create actual threads.
+
+Wool implements a work-stealing scheduler.
+Each thread is given its own task dequeue. A \texttt{SPAWN} operation pushes a task onto 
+one of the queues, and a \texttt{SYNC} operation removes a task from the tail of the queue.
+Tasks are taken from the front of the queue and executed. Only the owner thread of the queue can remove a task from that queue. 
+If a thread's task dequeue is empty it can steal a task from the front of one of the other queues.
+

@@ -54,9 +54,9 @@ than manually having to create these files.
 
     \end{itemize} 
 
-\section{Compiler Optimisations}
+\section{Compiler Optimizations}
 
-    There are a few optimisations that can be performed by the compiler to reduce the work needed to be 
+    There are a few optimizations that can be performed by the compiler to reduce the work needed to be 
     performed by the GPRM at runtime.
 
 \subsection{Binary Expression Reduction}
@@ -90,7 +90,8 @@ One way to improve the evaluator would be to transform the tree before evaluatin
 Using the axioms of the binary operations in the tree (e.g. addition being associative)
 and the type of values in the leaf nodes,. it should be possible to rearrange the nodes in the 
 tree to create a new tree which represents an expression equivalent to the expression
-represented by the starting tree.
+represented by the starting tree. This method is also known as \textbf{Algebraic Simplification and Reassociation
+of Addressing Expressions}\cite[Section~12.3]{optimize}
 
 The specific details of how the tree transformations work and implementation into the compiler is 
 left as future work.

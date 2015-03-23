@@ -149,7 +149,7 @@ them together to be able to build the AST.
 
 
 \section{Type and Scope checking}
-
+\label{sec:type}
 During type checking the types of identifiers from the current scope being used in expressions need
 to be known. Since the scope needs to be kept track of while type checking it makes reasonable
 sense to check for scope errors in the same stage.
@@ -254,7 +254,29 @@ that it follows the type and scope rules of the language.
 
 The goal of this stage is to run through the execution path the GPIR code
 will take from the entry function, and partially evaluate the code as much
-as possible while generating the GPIR AST.
+as possible while generating the GPIR AST. This stage involves
+\textbf{Sparse Conditional Constant propagation} (\textbf{SCC}) like optimizations.
+
+\textbf{SCC}\cite{sccp} is an optimization algorithm applied in compilers. It involves removing
+dead code, and performing \textbf{Constant Propogation} which involves replacing
+identifiers which can be evaluated to constant values at compile time with
+those values. As well as evaluating the results of constant expressions and
+further propogating them. Usually this involves interpreting
+the AST. How this stage differs from purely performing \textbf{SCC} optimizations
+is that a new
+AST is also being generated as expressions are being evaluated. Also branches 
+are always able to be evaluated at compile time. Due to these reasons this
+section of the build process is called "interpreting". However
+\textbf{SCC} can only be applied to an immediate representation (in this case an AST)
+which is in \textbf{Static Single Assignment form} (\textbf{SSA}). 
+
+\textbf{SSA}\cite{sccp, brandis94} 
+requires that every variable is assigned exactly once and is defined before being
+used. The GPC language already enforces single assignment, and that variables are assigned
+when they are defined (see section ~\ref{sub:single}). 
+Scope checking in section ~\ref{sec:type} proves that all variables used in
+the GPC AST passed to the interpreter have been defined. Therefore the GPC
+AST is in \textbf{SSA} form.
 
 Just before interpreting the GPC AST is transformed slightly into a similar AST
 with a couple of differences. One is that annotations are not present (since source position information
@@ -518,10 +540,10 @@ for (int i = 0; i < -1; i++) {
 There are two parts needed to evaluate an expression:
 
 \begin{itemize}
-    \item Replacement - All identifiers in the expression which have a value in the constant table are
+    \item \textbf{Constant Propogation}\cite{sccp} - All identifiers in the expression which have a value in the constant table are
           replaced with the respective constant value.
 
-    \item Reduction - Attempt to evaluate as much of the replaced expression as possible
+    \item \textbf{Constant Folding}\cite{sccp} - Attempt to evaluate as much of the expression with replaced constants as possible
 
 \end{itemize}
 

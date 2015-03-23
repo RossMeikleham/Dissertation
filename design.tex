@@ -77,13 +77,14 @@ to map these to separate threads.
 
 
 However if the language is Turing-complete deciding the execution path
-of a given program is essentially the Halting Problem. It has been proven that the solution to this problem is undecidable\cite{halting}. 
+of a given program is essentially the Halting Problem. It has been proven
+that the solution to this problem is undecidable\cite{halting}. 
 
 To avoid this problem, the language needs to be restricted to a point where it can still be useful and the execution
 path decided at compile time.
 
 If the language is purely functional with no side effects then this avoids the problem, however a program
-with no side effects is useless. There is one major feature that must ne in the language that invokes
+with no side effects is useless. There is one major feature that must be in the language that invokes
 side effects which is method calls for kernel objects. 
 
 
@@ -126,7 +127,7 @@ test.m1();
 
 
 
-\subsection{Compatibility with C++}
+\subsection{Compatibility With C++}
 Making the language completely compatible with C++ in that all GPC code can be
 compiled with a C++11 compatible compiler allows programmers that are familiar to
 C++ write GPC code with little difficulty. As long as they are aware of the restrictions
@@ -250,7 +251,8 @@ If statements must take a "pure" boolean type as its conditional.
  support for function pointers and C++11 lambdas. 
 
 
-\subsection{Single assignment}
+\subsection{Single Assignment}
+\label{sub:single}
 Variables in GPC can only be assigned once per scope to keep
 the language functional.
 
