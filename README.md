@@ -1,10 +1,4 @@
-This is my dissertation for my honours year project, designing and creating the compiler for
-a front end language for the Glasgow Parallel Reduction machine.
+This is my Dissertation for my honours year project: Designing and creating the compiler for
+a front end C-like language for the Glasgow Parallel Reduction machine.
 
 The repository for the compiler can be found [here](https://github.com/RossMeikleham/GPC).
-
-#Creating a PDF
-- `pdflatex dissertation`
-- `bibtex dissertation`
-- `pdflatex dissertation`
-- `pdflatex dissertation`
