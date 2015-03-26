@@ -263,7 +263,7 @@ as possible while generating the GPIR AST. This stage involves
 dead code and performing \textbf{Constant Propogation} which involves replacing
 identifiers which can be evaluated to constant values at compile time with
 those values. As well as evaluating the results of constant expressions and
-further propogating them. Usually this involves interpreting
+further propagating them. Usually this involves interpreting
 the AST. How this stage differs from purely performing \textbf{SCC} optimizations
 is that a new
 AST is also being generated as expressions are being evaluated. Also branches 
@@ -586,7 +586,7 @@ at compile time the expression is evaluated, otherwise the expression is not eva
 and the tree doesn't change.
 
 However this method isn't optimal when some sub-expressions cannot be
-evaluated at compile time. In this case the expression canbe fully evaluated
+evaluated at compile time. In this case the expression can be fully evaluated
 to a single value,
 but depending on the expression this method can at times reduce the expression
 down to an expression which can still be further reduced.
