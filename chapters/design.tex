@@ -1,7 +1,7 @@
 \chapter{Design}
 
 The goal is to create a C-like language which then compiles down to GPIR code.
-The language should be as C-like as possible ideally it should be as much
+The language should be as C-like as possible, ideally it should be as much
 of a complete subset of C++ as possible.
 
 C++ is a statically typed, imperative language which is sequentially evaluated by default.
@@ -109,8 +109,8 @@ and the execution path of code can be determined at compile time without too muc
         These are placed before a block
         of statements to determine whether each individual statement within the block are
         to be evaluated in sequential or parallel. By default a block of statements are evaluated
-        in parallel, but the par keyword makes it more explicit for readability in the case of lots of nested
-        seq/par blocks.
+        in parallel, but the \texttt{par} keyword makes it more explicit for readability in the case of lots of nested
+        \texttt{seq}/\texttt{par} blocks.
 
 \subsection{Objects}
 Objects can be declared in the top level scope, and must be in the GPRM::Kernel namespace.
@@ -159,8 +159,8 @@ int entry_fn() {
 }
 \end{lstlisting}
 
-When this code is compiled with a C++ compiler it will removed the seq and par
-keywords and what will be left is plain blocks. Essentially this should generate a
+When this code is compiled with a C++ compiler it will remove the \texttt{seq} and \texttt{par}
+keywords and plain blocks will be left. Essentially this should generate a
 serial version of the program which should generate the exact same results
 as the version compiled by GPC and run on the GPRM. This supports the 
 design decision of serial semantics.
@@ -174,7 +174,7 @@ to run it in parallel on the GPRM.
 
 However this method restricts the possible implementation of pragmas
 into the GPC language in the future. A possible improvement would be to change
-from the cilk plus approach of adding extra keywords to the language to an openMP
+from the Cilk Plus approach of adding extra keywords to the language to an openMP
 approach of having \texttt{seq} and \texttt{par} pragmas instead. Then the language
 would be fully compatible with C++ without needing to modify the GPC code.
 
@@ -248,7 +248,7 @@ If statements must take a "pure" boolean type as its conditional.
 \subsection{Functions}
  Basic support for defining and calling functions is supported, and function  
  syntax is exactly the same as C. However there is currently no
- support for function pointers and C++11 lambdas. 
+ support for function pointers or C++11 lambdas. 
 
 
 \subsection{Single Assignment}

@@ -88,7 +88,7 @@ it is clear that it is possible to evaluate the expression further.
 
 One way to improve the evaluator would be to transform the tree before evaluating it.
 Using the axioms of the binary operations in the tree (e.g. addition being associative)
-and the type of values in the leaf nodes,. it should be possible to rearrange the nodes in the 
+and the type of values in the leaf nodes, it should be possible to rearrange the nodes in the 
 tree to create a new tree which represents an expression equivalent to the expression
 represented by the starting tree. This method is also known as \textbf{Algebraic Simplification and Reassociation
 of Addressing Expressions}\cite[Section~12.3]{optimize}
@@ -108,7 +108,7 @@ The evaluator would then reduce this tree down to the following tree:
 \includegraphics[scale=0.5]{graphs/optimalFullyEvalTree.pdf}
 \end{center}
 
-This generates much simpiler GPIR code:
+This generates much simpler GPIR code:
 \lstinputlisting[style=myGPIR]{code_samples/binaryOpImproved.td} 
 
 
@@ -122,35 +122,36 @@ The following GPC code is used as an example:
 
 \lstinputlisting[style=myGPC]{code_samples/pureFun.gpc}
 
-The function "f" does not call any methods on kernel objects, and has no arguments.
-Every time "f" is called it returns the integer value "2". Therefore wherever f is called can
-be replaced with the integer value "2". However the compiler generates the following GPIR code
-for this example:
+The function \texttt{f} does not call any methods on kernel objects, and has no arguments.
+Every time \texttt{f} is called it returns the integer value "2". Therefore wherever \texttt{f} 
+is called can be replaced with the integer value "2". 
+However the compiler generates the following GPIR code for this example:
 
 \lstinputlisting[style=myGPIR]{code_samples/pureFun.td}
 
-When "f" is called its value is stored in a register. This is currently how function calls
+When \texttt{f} is called its value is stored in a register. This is currently how function calls
 store their return value when evaluated. An improvement to function evaluation to support
-reduction of "pure functions" would result in generating this simpler GPIR code:
+reduction of pure functions would result in generating this simpler GPIR code:
 
 \lstinputlisting[style=myGPIR]{code_samples/pureFunImproved.td}
 
 
 \subsection{Register Tracking}
-As explained in section {insert section}, the register tracking is non existent and every
-time a new value needs to be stored the register counter is just updated. After a while this
-could possibly use a lot of memory. A more efficient method would be to track registers
-being used, once a variable goes out of scope then that register gets "freed".
+As explained in section~\ref{sec:interp} register tracking is non existent and every
+time a new value needs to be stored the register counter is incremented. After a while this
+can possibly use a lot of memory. A more efficient method would be to track registers
+being used and once a variable goes out of scope then the register associated
+with that variable gets "freed".
 
-The "free list" can be implemented in Haskell as a simple linked list containing the numbers
+The "free list" can be implemented in Haskell as a simple linked list containing the number
 of registers that are free. Every time a register is "freed" its number gets added
-to the tail of the queue. When attempting to assign a variable a register the list is checked
-to see if it has any free registers on it, if it is then the head of the queue is taken
-as the register number. Otherwise the total register counter is incremented and the new value
-is used as the register number.
+to the tail of the queue. When attempting to assign a variable to a register the list is checked
+to see if it has any free registers in it. If it has any then the head of the queue is taken
+as the register number. Otherwise the total register counter is incremented and the 
+register counter is used as the register number for the new variable.
 
-In a scope keep track of all the register numbers allocated, once out of scope then add every
-one of those numbers to the "free list", as the values in those register will not need
-to be used again. This method of register tracking and freeing will use far less total
-registers than using a new register for each value.
-
+For each scope the register numbers allocated are kept track of. Once the interpreter
+goes out of a scope then every register number allocated in that specific scope
+is added to the ``free list'' as those values will not need to be used again.
+This method of register tracking and freeing will use far less total registers
+than using a new register for each new variable.

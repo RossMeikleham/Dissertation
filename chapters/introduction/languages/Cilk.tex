@@ -21,7 +21,8 @@ in parallel with Cilk Plus would be exactly the same if it were run
 serially (\textit{cilk\_spawn} becoming a function call, removing \textit{cilk\_sync} statements, 
 and replacing \textit{cilk\_for} with ordinary for loops).
 
-Cilk Plus makes use of pragmas to indicate to the compiler that a for loop contains data parallelism.\cite{cilkfaq}
+Cilk Plus makes use of pragmas to indicate to the compiler that a for loop contains data parallelism
+\cite{cilkfaq}.
 
 Cilk Plus also introduces a new operator \textbf{[:]} to select array sections\cite{cilkarray}. This operator
 allows for "high level" operations to be performed on arrays, and can help the compiler vectorize parts of code.

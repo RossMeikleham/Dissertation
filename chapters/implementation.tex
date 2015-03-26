@@ -7,14 +7,14 @@ The compiler is implemented in the Haskell programming language.
 
 During complication the need to traverse trees usually occurs quite
 often. Functional languages like Haskell are suited to this task 
-due to features such as pattern matching and tail-end recursive optimisation 
+due to features such as pattern matching and tail-end recursive optimization 
 which make traversing trees efficient and simple to implement.
 
 The Glasgow Haskell Compiler is available for most platforms, most importantly for Windows, OSX and Linux 
 on x86 architectures. This allows the compiler to be portable across these platforms provided the libraries 
 used to build the compiler are portable.
 
-Haskell has support for algebraic data types, these makes Abstract Syntax Trees
+Haskell has support for algebraic data types, these makes ASTs(Abstract Syntax Trees)
 simpler to implement. For example the AST for a very simple expression
 can be represented as follows:
 
@@ -106,7 +106,7 @@ The only way that these test would need to be changed was if the design
 of the language itself would need to be changed.
 
 A downside to this method is that without manually checking the errors raised
-by the tests that should fail; The source may generate an error which is unrelated
+by the tests that should fail; the source may generate an error which is unrelated
 to the error that is being tested. This is why some testing of each internal
 component is done alongside this method.
 
@@ -162,8 +162,8 @@ some sort, and the "single assignment" rule in the GPC language needs to be enfo
 
 There are two separate "types" of scope in a GPC program. The first is the top level scope and the
 other is at function level scope. Any scope "further" down from function level scope is itself
-a function level scope. During this stage the top level scope will be type and scope checked.
-Afterwards each individual function will be type and scope checked.
+a function level scope. During this stage the top level scope is type and scope checked.
+Afterwards each individual function is type and scope checked.
 
 For checking over top level statements the following Haskell record is used
 to keep track of identifier types, objects, and functions encountered:
@@ -180,19 +180,21 @@ data MainBlock = MainBlock {
 } deriving (Show)
 \end{lstlisting}
 
-It needs to be checked that no duplicate functions exist and  no duplicate top level variables exist,
-Once all top level statements have been checked, all functions in scope stored, 
-all top level variables stored, and all variables stored. Each individual function
-can be checked.
+The type checker needs to check that the are no instances of duplicate functions or 
+duplicate top level variables. Once this is done, and details of functions and top level
+variables have been stored, each individual function can be type checked.
 
 A slightly different structure is needed to type check functions.
 
-At anytime it is needed to be known what variables that are currently in scope, their types,
-what functions are available to call, their argument types, and return types. Also the
-objects which are available to call methods on, and the current function the type checker
-is in at any point.
+At any point in time the type checker needs to know the following:
+\begin{itemize}
+    \item Variables that are currently in scope, and their types
+    \item Functions that are available to call, their argument types, and return types
+    \item Objects that are available to call methods on
+    \item The current function the type checker is in
+\end{itemize}
 
-These values can be stored using the following Haskell record: 
+These values are stored using the following Haskell record: 
 
 \begin{lstlisting}[style=myHaskell]
 
@@ -206,16 +208,16 @@ data CodeBlock = CodeBlock {
 
 \end{lstlisting}
 
-When a function is being type check a new CodeBlock instance needs to be
-created from a MainBlock instance, as some of the top level information is needed.
+When a function is being type checked a new CodeBlock instance is
+created from a MainBlock instance as some of the top level information is needed.
 The details of the function that is being entered is stored in \texttt{\_currentFun}, 
-details of all available functions stored in \texttt{\_funcDefs}, and store all
-top level variable in \texttt{\_prevVars}. \texttt{\_curVars} is left as an empty map as the
-type checking of the function hasn't begun yet. Top level objects are also
+details of all available functions are stored in \texttt{\_funcDefs}, and all top
+level variables are stored in \texttt{\_prevVars}. \texttt{\_curVars} is left 
+as an empty map as the type checking of the function hasn't begun yet. Top level objects are also
 stored in \texttt{\_curVars} as an "object" variable type.
 
 Whenever a new scope is encountered by either calling a function, or entering a seq/par block;
-A new CodeBlock structure is created using the current structure. The new \texttt{\_curVars}
+a new CodeBlock structure is created using the current structure. The new \texttt{\_curVars}
 is set to the empty map as no variables have been encountered yet, the \texttt{\_funcDefs}
 are copied as all functions are on the top level so they don't change. The \texttt{\_currentFun}
 is copied if entering a block, otherwise if entering a function the function name
@@ -230,11 +232,10 @@ the same name in \texttt{\_prevScope}. Haskell's union operation on maps
 discards the key-value pairs in the second map for keys that are
 present in the first map, so this is trivial to implement.
 
-When type checking a function, every statement in the function is type checked
-as well as the type of the return statement. For every statement,
-every expression within the statement is type checked. This is implemented by traversing
-the Statement AST and checking the scopes of identifiers as well as expected types
-against actual types.
+When type checking a function every statement in the function is type checked.
+For every statement every expression within the statement is type checked, this is 
+implemented by traversing the Statement AST and checking the scopes of identifiers as well 
+as checking expected types match the actual types of each expression.
 
 Objects which are declared are not checked to see if they actually exist. Neither
 are method calls which means the argument types and return types when calling them
@@ -251,6 +252,7 @@ that it follows the type and scope rules of the language.
 
 
 \section{Interpreting}
+\label{sec:interp}
 
 The goal of this stage is to run through the execution path the GPIR code
 will take from the entry function, and partially evaluate the code as much
@@ -258,7 +260,7 @@ as possible while generating the GPIR AST. This stage involves
 \textbf{Sparse Conditional Constant propagation} (\textbf{SCC}) like optimizations.
 
 \textbf{SCC}\cite{sccp} is an optimization algorithm applied in compilers. It involves removing
-dead code, and performing \textbf{Constant Propogation} which involves replacing
+dead code and performing \textbf{Constant Propogation} which involves replacing
 identifiers which can be evaluated to constant values at compile time with
 those values. As well as evaluating the results of constant expressions and
 further propogating them. Usually this involves interpreting
@@ -276,12 +278,12 @@ used. The GPC language already enforces single assignment, and that variables ar
 when they are defined (see section ~\ref{sub:single}). 
 Scope checking in section ~\ref{sec:type} proves that all variables used in
 the GPC AST passed to the interpreter have been defined. Therefore the GPC
-AST is in \textbf{SSA} form.
+AST given to the interpreter is already in \textbf{SSA} form.
 
 Just before interpreting the GPC AST is transformed slightly into a similar AST
 with a couple of differences. One is that annotations are not present (since source position information
 is not needed anymore), and type information is stripped (since the program has been proven to 
-not have any type errors), also objects in the top level scope are stripped. (Since scope checking
+not have any type errors), also objects in the top level scope are stripped (since scope checking
 proved that all methods are called on objects that exist, and whenever a method is called, the
 name of the object is part of the call).
 
@@ -449,20 +451,22 @@ Performing a return is a bit tricky.
 Some pre-evaluation is needed  on blocks of statements when entering a 
 new block. if a return statement is
 in the current block of statements (not counting sub-blocks) then
-any statements after that are "removed", and when a return statement
+any statements after that are "removed" and when a return statement
 is found, it is evaluated as the return expression.
-What this means is that once the return is met, the interpreter
+What this means is that once the return is met the interpreter
 "returns" back to the code which executed the previous scope.
 
-There are also two different scenarios when performing a return.
+There are also two different scenarios when performing a return:
 
-If the interpreter is in a function at the top level of the function:
-Returning is simple in this case, all that is needed to be done is
-going to the previous scope.
+\begin{enumerate}
+    \item \textbf{The interpreter is at the top level scope of a function}.
+            Returning is simple in this case, all that is needed to be done is
+            going to the previous scope.
 
-If the interpreter is nested within one or more blocks in a function:
-Returning in this case involves going up multiple times until the interpreter
-is out of the scope of the current function.
+    \item \textbf{The interpreter is nested within one or more blocks in a function}.
+            Returning in this case involves going up multiple times until the interpreter
+            is out of the scope of the current function.
+\end{enumerate}
 
 To deal with these situations a "boilerplate" function is used. This function
 is called whenever an inner-scope needs to be interpreted. It
@@ -538,13 +542,13 @@ for (int i = 0; i < -1; i++) {
 
 There are two parts needed to evaluate an expression:
 
-\begin{itemize}
+\begin{enumerate}
     \item \textbf{Constant Propogation}\cite{sccp} - All identifiers in the expression which have a value in the constant table are
           replaced with the respective constant value.
 
     \item \textbf{Constant Folding}\cite{sccp} - Attempt to evaluate as much of the expression with replaced constants as possible
 
-\end{itemize}
+\end{enumerate}
 
 Replacement is trivial, using the constant table for the current scope the
 expression AST is recursively travelled and any instances of identifiers
@@ -582,7 +586,8 @@ at compile time the expression is evaluated, otherwise the expression is not eva
 and the tree doesn't change.
 
 However this method isn't optimal when some sub-expressions cannot be
-evaluated at compile time. In this case the expression can only be partly evaluated,
+evaluated at compile time. In this case the expression canbe fully evaluated
+to a single value,
 but depending on the expression this method can at times reduce the expression
 down to an expression which can still be further reduced.
 This problem and a possible solution is discussed in Chapter ~\ref{ch:future}.
@@ -595,7 +600,7 @@ Once the interpreter is completed it should produce the GPIR AST,
 from this AST the goal is to output GPIR source code.
 Since the GPIR language is very simple this task is not too difficult.,
 It involves recursively travelling the tree, ensuring lists containing task operations
-are surrounded by parenthesis, printing quotes when needed, etc.
+are surrounded by parentheses, printing quotes when needed, etc.
 
 For this task a "pretty printer" library is used which allows for formatting
 the output much easier than manipulating strings. The generated GPIR source code
