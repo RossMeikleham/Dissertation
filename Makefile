@@ -1,5 +1,2 @@
-all:
-	pdflatex dissertation
-	bibtex   dissertation	
-	pdflatex dissertation
-	pdflatex dissertation
+TARGET=dissertation
+include Makefile.include

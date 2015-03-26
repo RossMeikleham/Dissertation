@@ -5,19 +5,19 @@
 A merge sort algorithm has been implemented in GPC for 80 million integers with a cutoff value 
 of 2048. The actual sorting and merging is performed by the \texttt{MergeSort} kernel class
 methods \texttt{MergeSort.serial\_ms} and \texttt{MergeSort.merge\_two}. The GPC code structures
-how the Kernel tasks should interact and calls them in parallel.\\ 
+how the Kernel tasks should interact and calls them in parallel. 
 
 \lstinputlisting[style=myGPC]{code_samples/GPRM_MergeSort.gpc}
-
-This code is compiled into GPIR code by the compiler from the command line by entering \texttt{gpcc GPRM\_MergeSort.gpc --threads=240}
-where the \texttt{threads} argument is an optional to manually adjust the number of total threads that are available
-to map tasks onto.
+\overfullrule=2cm
+This code is compiled into GPIR code by the compiler from the command line by entering \\
+\texttt{gpcc GPRM\_MergeSort.gpc --threads=240} where the \texttt{threads} argument is an 
+optional to manually adjust the number of total threads that are available to map tasks onto.
 
 \newpage
 
 \begin{figure}[!htb]
 \pdfimageresolution=110
-\includegraphics{graphs/benchmark.png}
+\centerline{\includegraphics[angle=270, scale=1.3]{graphs/benchmark.pdf}}
 \caption{Merge sort benchmarks for parallel frameworks \cite{GPRMBench}}
 \label{fig:bench}
 \end{figure}
@@ -32,9 +32,8 @@ or fork-join mechanisms.
 
 \begin{figure}[!htb]
 \pdfimageresolution=110
-\includegraphics{graphs/mergebad.png}
+\includegraphics{graphs/merge.pdf}
 \caption{Mergesort implementations in TBB, OpenMP, and CilkPlus \cite{GPRMBench}}
-\label{fig:bench}
 \end{figure}
 
 
