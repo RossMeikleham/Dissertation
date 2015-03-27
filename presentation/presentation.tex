@@ -2,7 +2,7 @@
 \usetheme{AnnArbor}
 \usecolortheme{dolphin}
 \setbeamercolor*{frametitle}{bg=white,fg=structure.fg}
-\title{Design and compilation of a C-like front end language for the GPRM}
+\title{Design and compilation of a C-like front end language for GPRM}
 \author{Ross Meikleham}
 \date{27th March 2015}
 
@@ -56,7 +56,6 @@
 
 
 \frame{\titlepage}
-\frame{\tableofcontents}
 \section{GPRM}
 \subsection{Introduction}
 \frame{
@@ -64,8 +63,8 @@
     \begin{itemize}
         \item In the past most code written with serial computation in mind
         \item Rate of increase of processor speeds declining, focus on multiple processor cores 
-        \item Be able to reuse serial code to take advantage of multiple cores without rewriting 
-              existing code.
+        \item Would be useful to be able to reuse existing serial code to take advantage of multiple 
+                cores without rewriting it.
     \end{itemize}
 }
 \frame{
@@ -163,18 +162,20 @@
             \frametitle{GPC Implementation}    
             \begin{itemize}
                 \item Language compiler is implemented in Haskell
-                \item Fully type and scope checked
-                \item Interprets the AST to generate GPIR code
+                \item Uses parsec library to parse/lex source
+                \item Type and Scope checking then run over the AST
+                \item Then interprets the AST to generate GPIR code
             \end{itemize}
 }
 
 \frame{
         \frametitle{Interpreter}
         \begin{itemize}
-            \item Single pass over the AST
+            \item Runs over AST
             \item Assigns threads to tasks
             \item Performs branch elimination on if statements. 
             \item Constant propogation and partial evaluation of expressions
+            \item Function inlining for speed and for loop unrolling 
             \item Generates GPIR AST, can be "pretty printed" to GPIR source
         \end{itemize}
 }
@@ -192,6 +193,19 @@
     \frametitle{MergeSort Example}
     \lstinputlisting[style=myGPIR]{GPRM_MergeSort.td}
 }
+
+
+\frame{
+    \frametitle{Summary}
+    \begin{itemize}
+        \item Designed a purely functional language which is familiar to programmers
+              which describes the composition of serial C++ tasks to be run in parallel
+        \item Built the compiler for this language.
+        \item Questions?    
+    \end{itemize}
+}
+
+
 
 \end{document}
 
