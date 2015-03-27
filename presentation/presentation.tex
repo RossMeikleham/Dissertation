@@ -5,7 +5,56 @@
 \title{Design and compilation of a C-like front end language for the GPRM}
 \author{Ross Meikleham}
 \date{27th March 2015}
+
+
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{stackengine}
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\usepackage{courier}
+\MakeOuterQuote{"}
+
+
 \begin{document}
+
+%Set the Font/Coloring for the GPC language,
+%Use the C++ default with added seq and par keywords
+\makeatletter
+\lstdefinestyle{myGPC} {language=C++,
+                basicstyle=%
+                \ttfamily
+                \lst@ifdisplaystyle\scriptsize\fi,
+                keywordstyle=\color{blue}\ttfamily,
+                stringstyle=\color{red}\ttfamily,
+                commentstyle=\color{gray}\ttfamily,
+                morecomment=[l][\color{magenta}]{\#},
+                directivestyle={\color{green}},
+                identifierstyle=\color{purple},
+                showstringspaces=false,
+                morekeywords={seq, par, begin}
+}
+\makeatother
+
+
+\makeatletter
+\lstdefinestyle{myGPIR} {language=Lisp,
+                basicstyle=%
+                \ttfamily
+                \lst@ifdisplaystyle\scriptsize\fi,
+                keywordstyle=\color{blue}\ttfamily,
+                commentstyle=\color{gray}\ttfamily,
+                morecomment=[l][\color{magenta}]{\#},
+                identifierstyle=\color{purple},
+                showstringspaces=false,
+                morekeywords={seq, par, begin},
+                deletekeywords={write, read}
+}
+\makeatother
+
+
 \frame{\titlepage}
 \frame{\tableofcontents}
 \section{GPRM}
@@ -103,7 +152,7 @@
     \begin{itemize}
         \item Being a subset of C++, we can define \texttt{seq} and \texttt{par}
               as no-ops, compiler ignores preprocessor directives. 
-        \item can be compiled using a C++ compiler, due to serial semantics
+        \item Can be compiled using a C++ compiler, due to serial semantics
               behaviour should be the same as parallel version.
         \item Can use already available C++ tools to test.
     \end{itemize}
@@ -122,8 +171,30 @@
 \frame{
         \frametitle{Interpreter}
         \begin{itemize}
-            \item stuff
+            \item Single pass over the AST
+            \item Assigns threads to tasks
+            \item Performs branch elimination on if statements. 
+            \item Constant propogation and partial evaluation of expressions
+            \item Generates GPIR AST, can be "pretty printed" to GPIR source
         \end{itemize}
 }
 
+
+\raggedright
+
+\frame{
+    \frametitle{MergeSort Example}
+    \lstinputlisting[style=myGPC]{GPRM_MergeSort.gpc}
+}
+
+
+\frame{
+    \frametitle{MergeSort Example}
+    \lstinputlisting[style=myGPIR]{GPRM_MergeSort.td}
+}
+
 \end{document}
+
+
+
+
